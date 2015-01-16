@@ -5,7 +5,7 @@ void ofApp::setup(){
     
     // Kinect setup
     ofSetLogLevel(OF_LOG_ERROR);
-    ofSetFrameRate(12);
+    ofSetFrameRate(24);
     kinect.setRegistration(true);
     kinect.init();
     kinect.open("A00365A12829045A");
@@ -18,22 +18,28 @@ void ofApp::setup(){
     ofSetVerticalSync(false);
     box2d.init();
     box2d.setGravity(0, 30);
-    box2d.registerGrabbing();
-    box2d.setFPS(12.0);
+   // box2d.registerGrabbing();
+    box2d.setFPS(24.0);
     
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
     kinect.update();
+    box2d.update();
     
     if(kinect.isFrameNew()){
         // get depth image from kinect and add pixels to cvGrayImages
         grayimage.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height);
+        grayimage.blur(1.5);
         graythresnear = grayimage;
-        graythresnear.threshold(80);
+        graythresnear.threshold(nearThreshold);
         // CV_RETR_CCOMP returns a hierarchy of outer contours and holes
         contourfinder.findContours(graythresnear, minArea, maxArea, maxInput, CV_RETR_CCOMP);
+        
+        for(int i=0; i<edges.size(); i++){
+            edges[i].get()->clear();
+        }
         
         for(int i=0; i<contourfinder.blobs.size(); i++){
             
@@ -41,7 +47,6 @@ void ofApp::update(){
             numOfPtsOfBlob = cvblobs[i].nPts;   // number of points(x,y) in each blob
             
             if(cvblobs[i].hole){
-                
                 ofPtr<ofxBox2dEdge> edge = ofPtr<ofxBox2dEdge>(new ofxBox2dEdge);
                 
                 for(int j=0; j<numOfPtsOfBlob; j+=10){   //get every 10th points
@@ -52,26 +57,27 @@ void ofApp::update(){
                     
                     edge.get()->addVertex(point.get()->x, point.get()->y);  //add pointX,pointY in edge
                 }
+                edge.get()->setPhysics(0.0, 0.0, 1.0);
                 edge.get()->create(box2d.getWorld());   // set box2d world in edge
                 edges.push_back(edge);  // add edge into <edges>
             }
-            
-            
         }
     }
     currentInput = contourfinder.nBlobs;    // current number of blobs
     grayimage.flagImageChanged();
     
-    box2d.update();
+    ofRemove(circles, ofxBox2dBaseShape::shouldRemoveOffScreen);
     
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+
+    cout << message;
     
     // Draw depth image and contour
     graythresnear.draw(0, 0, kinect.width, kinect.height);
-    contourfinder.draw(0, 0, kinect.width, kinect.height);
+    //contourfinder.draw(0, 0, kinect.width, kinect.height);
     
     // Draw yellow circle in the center of each blob
     for(int i=0; i<currentInput; i++){
@@ -79,21 +85,40 @@ void ofApp::draw(){
             ofSetColor(255, 255, 0);
             ofCircle(cvblobs[i].centroid.x, cvblobs[i].centroid.y, 5);
             ofSetColor(255);
+            message = "HOLE :";
+        }else{
+            message = "not hole //";
         }
+    }
+    
+    // Draw green Box2dCircles
+    for(int i=0; i<circles.size(); i++){
+        ofFill();
+        ofSetColor(0, 255, 100);
+        circles[i].get()->draw();
+        ofSetColor(255);
     }
     
     // Draw red Box2dEdge on the contour of each blob
     ofSetColor(255, 0, 0);
+    ofSetLineWidth(3.0);
     for(int i=0; i<edges.size(); i++){
         edges[i].get()->draw();
     }
     ofSetColor(255);
     
-    cout << numOfPtsOfBlob << " /";
+
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
+    if(key == 'c'){
+        float radius = 5;
+        circles.push_back(ofPtr<ofxBox2dCircle>(new ofxBox2dCircle));
+        ofxBox2dCircle * circle = circles.back().get();
+        circle -> setPhysics(5.0, 0.5, 1.0); // density, bounce, friction
+        circle -> setup(box2d.getWorld(), mouseX, mouseY, radius);
+    }
     
 }
 

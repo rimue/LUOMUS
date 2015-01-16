@@ -28,17 +28,18 @@ public:
     ofxCvGrayscaleImage graythresnear;
     ofxCvContourFinder contourfinder;
     vector<ofxCvBlob> cvblobs;
+    int nearThreshold = 80;
     int minArea = 1000;
     int maxArea = 25000;
     int maxInput = 5;
     int currentInput = 0;
     int numOfPtsOfBlob = 0;
+    string message = "not hole //";
     
     // Box2d
     ofxBox2d box2d;
-    vector<ofPolyline> lines;
-    vector <ofPtr<ofxBox2dCircle> > circles;
-    vector <ofPtr<ofxBox2dEdge> > edges;
-    
+//    vector<ofPolyline> lines;
+    vector<ofPtr<ofxBox2dEdge> > edges;
+    vector<ofPtr<ofxBox2dCircle> > circles;
     
 };
