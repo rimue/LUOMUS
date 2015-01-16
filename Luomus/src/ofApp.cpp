@@ -17,8 +17,8 @@ void ofApp::setup(){
     // Box2d setup
     ofSetVerticalSync(false);
     box2d.init();
-    box2d.setGravity(0, 30);
-   // box2d.registerGrabbing();
+    box2d.setGravity(0, 0);
+    box2d.registerGrabbing();
     box2d.setFPS(24.0);
     
 }
@@ -37,6 +37,7 @@ void ofApp::update(){
         // CV_RETR_CCOMP returns a hierarchy of outer contours and holes
         contourfinder.findContours(graythresnear, minArea, maxArea, maxInput, CV_RETR_CCOMP);
         
+        // Clear previous edges
         for(int i=0; i<edges.size(); i++){
             edges[i].get()->clear();
         }
@@ -48,15 +49,21 @@ void ofApp::update(){
             
             if(cvblobs[i].hole){
                 ofPtr<ofxBox2dEdge> edge = ofPtr<ofxBox2dEdge>(new ofxBox2dEdge);
+                ofPtr<ofPoint> lastpoint = ofPtr<ofPoint>(new ofPoint);
                 
-                for(int j=0; j<numOfPtsOfBlob; j+=10){   //get every 10th points
+                for(int j=0; j<numOfPtsOfBlob; j+=4){   //get every 4th points
                     
                     ofPtr<ofPoint> point = ofPtr<ofPoint>(new ofPoint); //and put into point
                     point.get()->x = cvblobs[i].pts.at(j).x;
                     point.get()->y = cvblobs[i].pts.at(j).y;
                     
+                    lastpoint.get()->x = cvblobs[i].pts.at(0).x;
+                    lastpoint.get()->y = cvblobs[i].pts.at(0).y;
+                    
                     edge.get()->addVertex(point.get()->x, point.get()->y);  //add pointX,pointY in edge
                 }
+                edge.get()->addVertex(lastpoint.get()->x, lastpoint.get()->y); //add to connect first&last points
+                
                 edge.get()->setPhysics(0.0, 0.0, 1.0);
                 edge.get()->create(box2d.getWorld());   // set box2d world in edge
                 edges.push_back(edge);  // add edge into <edges>
@@ -105,21 +112,20 @@ void ofApp::draw(){
     for(int i=0; i<edges.size(); i++){
         edges[i].get()->draw();
     }
+    ofSetLineWidth(0.3);
     ofSetColor(255);
     
-
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     if(key == 'c'){
-        float radius = 5;
+        float radius = 15;
         circles.push_back(ofPtr<ofxBox2dCircle>(new ofxBox2dCircle));
         ofxBox2dCircle * circle = circles.back().get();
         circle -> setPhysics(5.0, 0.5, 1.0); // density, bounce, friction
         circle -> setup(box2d.getWorld(), mouseX, mouseY, radius);
     }
-    
 }
 
 //--------------------------------------------------------------
