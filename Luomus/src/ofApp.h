@@ -26,9 +26,18 @@ public:
     ofxKinect kinect;
     ofxCvGrayscaleImage grayimage;
     ofxCvGrayscaleImage graythresnear;
+    ofxCvGrayscaleImage grayimage1;
+    ofxCvGrayscaleImage graythresnear1;
+    ofxCvGrayscaleImage bothKinects;
     ofxCvContourFinder contourfinder;
     vector<ofxCvBlob> cvblobs;
-    int nearThreshold = 80;
+    
+    unsigned char* combinedVideo;
+    ofPixels GrayPixel;
+    ofPixels GrayPixel1;
+    
+    float kinectResize = 1.33;
+    int nearThreshold = 180;
     int minArea = 500;
     int maxArea = 25000;
     int maxInput = 5;

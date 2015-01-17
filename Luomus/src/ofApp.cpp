@@ -6,12 +6,20 @@ void ofApp::setup(){
     // Kinect setup
     ofSetLogLevel(OF_LOG_ERROR);
     ofSetFrameRate(24);
-    kinect.setRegistration(true);
+    kinect.setRegistration(false);
     kinect.init();
     kinect.open("A00365A12829045A");
+    kinect.setCameraTiltAngle(15);
     
     grayimage.allocate(kinect.width, kinect.height);
     graythresnear.allocate(kinect.width, kinect.height);
+    
+    grayimage1.allocate(kinect.width, kinect.height);
+    graythresnear1.allocate(kinect.width, kinect.height);
+    
+    bothKinects.allocate(kinect.height*2, kinect.width);
+    combinedVideo = (unsigned char*)malloc(640 * 480 * 2 * sizeof(unsigned char*));
+    
     cvblobs.resize(100);
     
     // Box2d setup
@@ -31,11 +39,24 @@ void ofApp::update(){
     if(kinect.isFrameNew()){
         // get depth image from kinect and add pixels to cvGrayImages
         grayimage.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height);
-        grayimage.blur(1.5);
-        graythresnear = grayimage;
-        graythresnear.threshold(nearThreshold);
+        grayimage1.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height);
+        grayimage.blur(1.5);    grayimage1.blur(1.5);
+        
+        GrayPixel = grayimage.getPixelsRef();
+        GrayPixel.rotate90(1);
+        GrayPixel1 = grayimage1.getPixelsRef();
+        GrayPixel1.rotate90(-1);
+
+        for(int i=0; i<640; i++){
+            memcpy(combinedVideo + (i*960), GrayPixel.getPixels()+(i*480), 480);
+            memcpy(combinedVideo + (i*960+480), GrayPixel1.getPixels()+(i*480), 480);
+            bothKinects.setFromPixels(combinedVideo, 480*2, 640);
+        }
+        bothKinects.resize(960*kinectResize, 640*kinectResize);
+        bothKinects.threshold(nearThreshold);
+        
         // CV_RETR_CCOMP returns a hierarchy of outer contours and holes
-        contourfinder.findContours(graythresnear, minArea, maxArea, maxInput, CV_RETR_CCOMP);
+        contourfinder.findContours(bothKinects, minArea, maxArea, maxInput, CV_RETR_CCOMP);
         
         // Clear previous edges
         for(int i=0; i<edges.size(); i++){
@@ -72,6 +93,7 @@ void ofApp::update(){
     }
     currentInput = contourfinder.nBlobs;    // current number of blobs
     grayimage.flagImageChanged();
+    grayimage1.flagImageChanged();
     
     ofRemove(circles, ofxBox2dBaseShape::shouldRemoveOffScreen);
     
@@ -80,11 +102,11 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
 
-    cout << message;
-    
+    //cout << message;
+
     // Draw depth image and contour
-    graythresnear.draw(0, 0, kinect.width, kinect.height);
-    //contourfinder.draw(0, 0, kinect.width, kinect.height);
+    bothKinects.draw(0, 0, bothKinects.width,bothKinects.height);
+    contourfinder.draw(0, 0, bothKinects.width,bothKinects.height);
     
     // Draw yellow circle in the center of each blob
     for(int i=0; i<currentInput; i++){
