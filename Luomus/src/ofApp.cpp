@@ -12,10 +12,7 @@ void ofApp::setup(){
     kinect.setCameraTiltAngle(15);
     
     grayimage.allocate(kinect.width, kinect.height);
-    graythresnear.allocate(kinect.width, kinect.height);
-    
     grayimage1.allocate(kinect.width, kinect.height);
-    graythresnear1.allocate(kinect.width, kinect.height);
     
     bothKinects.allocate(kinect.height*2, kinect.width);
     combinedVideo = (unsigned char*)malloc(640 * 480 * 2 * sizeof(unsigned char*));
@@ -46,7 +43,7 @@ void ofApp::update(){
         GrayPixel.rotate90(1);
         GrayPixel1 = grayimage1.getPixelsRef();
         GrayPixel1.rotate90(-1);
-
+        
         for(int i=0; i<640; i++){
             memcpy(combinedVideo + (i*960), GrayPixel.getPixels()+(i*480), 480);
             memcpy(combinedVideo + (i*960+480), GrayPixel1.getPixels()+(i*480), 480);
@@ -56,6 +53,7 @@ void ofApp::update(){
         bothKinects.threshold(nearThreshold);
         
         // CV_RETR_CCOMP returns a hierarchy of outer contours and holes
+        maxArea = (bothKinects.width * bothKinects.height)/2;
         contourfinder.findContours(bothKinects, minArea, maxArea, maxInput, CV_RETR_CCOMP);
         
         // Clear previous edges
@@ -101,9 +99,9 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-
+    
     //cout << message;
-
+    
     // Draw depth image and contour
     bothKinects.draw(0, 0, bothKinects.width,bothKinects.height);
     contourfinder.draw(0, 0, bothKinects.width,bothKinects.height);
@@ -134,7 +132,17 @@ void ofApp::draw(){
     for(int i=0; i<edges.size(); i++){
         edges[i].get()->draw();
     }
-    ofSetLineWidth(0.3);
+    
+    // Draw screen guidlines
+    ofSetColor(0, 255, 255);
+    for(int i=1; i<8; i++){
+        ofSetLineWidth(1.0);
+        if(i%2==1){
+            ofSetLineWidth(0.5);
+        }
+        ofLine(0, i*(screenHeight/8), screenWidth, i*(screenHeight/8));
+        ofLine(i*(screenWidth/8), 0, i*(screenWidth/8), screenHeight);
+    }
     ofSetColor(255);
     
 }
@@ -186,6 +194,6 @@ void ofApp::gotMessage(ofMessage msg){
 }
 
 //--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo){ 
+void ofApp::dragEvent(ofDragInfo dragInfo){
     
 }

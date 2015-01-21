@@ -22,12 +22,13 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     
+    int screenWidth = 1280;
+    int screenHeight = 854;
+    
     // Kinect
     ofxKinect kinect;
     ofxCvGrayscaleImage grayimage;
-    ofxCvGrayscaleImage graythresnear;
     ofxCvGrayscaleImage grayimage1;
-    ofxCvGrayscaleImage graythresnear1;
     ofxCvGrayscaleImage bothKinects;
     ofxCvContourFinder contourfinder;
     vector<ofxCvBlob> cvblobs;
@@ -37,9 +38,9 @@ public:
     ofPixels GrayPixel1;
     
     float kinectResize = 1.33;
-    int nearThreshold = 180;
+    int nearThreshold = 80;
     int minArea = 500;
-    int maxArea = 25000;
+    int maxArea;
     int maxInput = 5;
     int currentInput = 0;
     int numOfPtsOfBlob = 0;
@@ -49,5 +50,7 @@ public:
     ofxBox2d box2d;
     vector<ofPtr<ofxBox2dEdge> > edges;
     vector<ofPtr<ofxBox2dCircle> > circles;
+    
+    ofQTKitPlayer greendog;
     
 };
