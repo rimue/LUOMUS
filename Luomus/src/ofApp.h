@@ -39,8 +39,8 @@ public:
     
     float kinectResize = 1.33;
     int nearThreshold = 80;
-    int minArea = 500;
-    int maxArea;
+    int minArea = 50;
+    int maxArea = 50000;
     int maxInput = 5;
     int currentInput = 0;
     int numOfPtsOfBlob = 0;
@@ -51,6 +51,16 @@ public:
     vector<ofPtr<ofxBox2dEdge> > edges;
     vector<ofPtr<ofxBox2dCircle> > circles;
     
+    // animal
     ofQTKitPlayer greendog;
+    ofQTKitDecodeMode decodeMode;
+    int dogWidth = 160;
+    int dogHeight = 148;
     
+    ofxCvColorImage colorImg;
+    ofxCvGrayscaleImage grayImg, grayBg, grayDiff;
+    ofxCvContourFinder DogcontourFinder;
+    bool bLearnBackground;
+    vector<ofxCvBlob> dogBlob;
+    vector <ofPtr<ofxBox2dPolygon> > dogPolys;
 };
