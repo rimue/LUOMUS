@@ -26,7 +26,7 @@ public:
     int screenHeight = 914;
     
     // Kinect
-    ofxKinect kinect;
+    ofxKinect kinect, kinect1;
     ofxCvGrayscaleImage grayimage;
     ofxCvGrayscaleImage grayimage1;
     ofxCvGrayscaleImage bothKinects;
@@ -38,12 +38,13 @@ public:
     ofPixels GrayPixel1;
     
     float kinectResize = 1.33;
-    int nearThreshold = 50;
-    int minArea = 50;
-    int maxArea = (kinect.width*kinect.height)*2;
+    int nearThreshold = 190;
+    int minArea = 500;
+    int maxArea;
     int maxInput = 5;
     int currentInput = 0;
     int numOfPtsOfBlob = 0;
+    int topMargin = 25;
     string message = "not hole //";
     
     // Box2d

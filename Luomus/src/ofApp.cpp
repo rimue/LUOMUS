@@ -2,14 +2,20 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+    ofBackground(100);
+    ofSetFrameRate(12);
     
     // Kinect setup
     ofSetLogLevel(OF_LOG_ERROR);
-    ofSetFrameRate(24);
     kinect.setRegistration(false);
     kinect.init();
     kinect.open("A00365A12829045A");
     kinect.setCameraTiltAngle(0);
+    
+//    kinect1.setRegistration(false);
+//    kinect1.init();
+//    kinect1.open("A00365917784047A");
+//    kinect1.setCameraTiltAngle(0);
     
     grayimage.allocate(kinect.width, kinect.height);
     grayimage1.allocate(kinect.width, kinect.height);
@@ -24,7 +30,7 @@ void ofApp::setup(){
     box2d.init();
     box2d.setGravity(0, 0);
     box2d.registerGrabbing();
-    box2d.setFPS(24.0);
+    //box2d.setFPS(24.0);
     
     raccoon.loadImage("raccoon.png");
 }
@@ -33,9 +39,8 @@ void ofApp::setup(){
 void ofApp::update(){
     kinect.update();
     box2d.update();
-    
     if(kinect.isFrameNew()){
-        // get depth image from kinect and add pixels to cvGrayImages
+        // Get depth image from kinect and add pixels to cvGrayImages
         grayimage.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height);
         grayimage1.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height);
         grayimage.blur(1.5);    grayimage1.blur(1.5);
@@ -45,6 +50,7 @@ void ofApp::update(){
         GrayPixel1 = grayimage1.getPixelsRef();
         GrayPixel1.rotate90(-1);
         
+        // Combine two kinect images
         for(int i=0; i<640; i++){
             memcpy(combinedVideo + (i*960), GrayPixel.getPixels()+(i*480), 480);
             memcpy(combinedVideo + (i*960+480), GrayPixel1.getPixels()+(i*480), 480);
@@ -54,7 +60,7 @@ void ofApp::update(){
         bothKinects.threshold(nearThreshold);
         
         // CV_RETR_CCOMP returns a hierarchy of outer contours and holes
-        maxArea = (bothKinects.width * bothKinects.height)/2;
+        maxArea = (bothKinects.width * bothKinects.height)*2;
         contourfinder.findContours(bothKinects, minArea, maxArea, maxInput, CV_RETR_CCOMP);
         
         // Clear previous edges
@@ -62,6 +68,7 @@ void ofApp::update(){
             edges[i].get()->clear();
         }
         
+        // Get points of Blob and Add to Edge
         for(int i=0; i<contourfinder.blobs.size(); i++){
             
             cvblobs[i] = contourfinder.blobs.at(i); //contain blobs in <cvblobs>
@@ -75,10 +82,10 @@ void ofApp::update(){
                     
                     ofPtr<ofPoint> point = ofPtr<ofPoint>(new ofPoint); //and put into point
                     point.get()->x = cvblobs[i].pts.at(j).x;
-                    point.get()->y = cvblobs[i].pts.at(j).y;
+                    point.get()->y = cvblobs[i].pts.at(j).y+topMargin;
                     
                     lastpoint.get()->x = cvblobs[i].pts.at(0).x;
-                    lastpoint.get()->y = cvblobs[i].pts.at(0).y;
+                    lastpoint.get()->y = cvblobs[i].pts.at(0).y+topMargin;
                     
                     edge.get()->addVertex(point.get()->x, point.get()->y);  //add pointX,pointY in edge
                 }
@@ -95,31 +102,24 @@ void ofApp::update(){
     grayimage1.flagImageChanged();
     
     ofRemove(circles, ofxBox2dBaseShape::shouldRemoveOffScreen);
-    
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
     
-    //cout << message;
-    
-    // Draw depth image and contour
-    bothKinects.draw(0, 0, bothKinects.width,bothKinects.height);
-    contourfinder.draw(0, 0, bothKinects.width,bothKinects.height);
+    // Draw kinect depth image
+    bothKinects.draw(0, topMargin, bothKinects.width,bothKinects.height);
     
     // Draw yellow circle in the center of each blob
     for(int i=0; i<currentInput; i++){
         if(cvblobs[i].hole){
             ofSetColor(255, 255, 0);
-            ofCircle(cvblobs[i].centroid.x, cvblobs[i].centroid.y, 5);
+            ofCircle(cvblobs[i].centroid.x, cvblobs[i].centroid.y+topMargin, 5);
             ofSetColor(255);
-            message = "HOLE :";
-        }else{
-            message = "not hole //";
         }
     }
     
-    // Draw green Box2dCircles
+    // Draw raccoon collision area: green Box2dCircles
     for(int i=0; i<circles.size(); i++){
         ofNoFill();
         ofSetColor(0, 255, 100);
@@ -128,16 +128,16 @@ void ofApp::draw(){
         ofSetColor(255);
     }
     
+    // Draw raccoon image
     circlePosX = circlePos.x;
     circlePosY = circlePos.y;
-    raccoon.draw(circlePosX-50, circlePosY-30, raWidth*.6, raHeight*.6);
+    raccoon.draw(circlePosX-55, circlePosY-30, raWidth*.65, raHeight*.65);
     ofFill();
     
     // Draw red Box2dEdge on the contour of each blob
     ofSetColor(255, 0, 0);
     ofSetLineWidth(3.0);
     for(int i=0; i<edges.size(); i++){
-
         edges[i].get()->draw();
     }
     
@@ -149,16 +149,20 @@ void ofApp::draw(){
             ofSetLineWidth(0.5);
         }
         ofLine(0, i*(screenHeight/8), screenWidth, i*(screenHeight/8));
+        ofDrawBitmapString(ofToString(int(ofMap(i*(screenHeight/8), 0, screenHeight, 0, 250)))+"cm", 0, i*(screenHeight/8)+9);
         ofLine(i*(screenWidth/8), 0, i*(screenWidth/8), screenHeight);
+        ofDrawBitmapString(ofToString(int(ofMap(i*(screenWidth/8), 0, screenWidth, 0, 350)))+"cm", i*(screenWidth/8)+9, 10);
     }
     ofSetColor(255);
-    
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     if(key == 'c'){
-        float radius = 40;
+        
+        circles.clear();
+        
+        float radius = 43;
         circles.push_back(ofPtr<ofxBox2dCircle>(new ofxBox2dCircle));
         ofxBox2dCircle * circle = circles.back().get();
         circle -> setPhysics(0.001, 0.0, 0.0); // density, bounce, friction
