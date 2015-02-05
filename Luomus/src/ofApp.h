@@ -23,7 +23,7 @@ public:
     void gotMessage(ofMessage msg);
     
     int screenWidth = 1280;
-    int screenHeight = 854;
+    int screenHeight = 914;
     
     // Kinect
     ofxKinect kinect;
@@ -38,9 +38,9 @@ public:
     ofPixels GrayPixel1;
     
     float kinectResize = 1.33;
-    int nearThreshold = 80;
+    int nearThreshold = 50;
     int minArea = 50;
-    int maxArea = 50000;
+    int maxArea = (kinect.width*kinect.height)*2;
     int maxInput = 5;
     int currentInput = 0;
     int numOfPtsOfBlob = 0;
@@ -50,17 +50,15 @@ public:
     ofxBox2d box2d;
     vector<ofPtr<ofxBox2dEdge> > edges;
     vector<ofPtr<ofxBox2dCircle> > circles;
+
     
     // animal
-    ofQTKitPlayer greendog;
-    ofQTKitDecodeMode decodeMode;
-    int dogWidth = 160;
-    int dogHeight = 148;
+    int raWidth = 155;
+    int raHeight = 100;
+    float circlePosX=0;
+    float circlePosY=0;
+    ofxBox2dCircle raCircle;
+    ofVec2f circlePos;
+    ofImage raccoon;
     
-    ofxCvColorImage colorImg;
-    ofxCvGrayscaleImage grayImg, grayBg, grayDiff;
-    ofxCvContourFinder DogcontourFinder;
-    bool bLearnBackground;
-    vector<ofxCvBlob> dogBlob;
-    vector <ofPtr<ofxBox2dPolygon> > dogPolys;
 };
