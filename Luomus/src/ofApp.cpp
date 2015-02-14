@@ -3,14 +3,14 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
     ofBackground(100);
-    ofSetFrameRate(12);
+    ofSetFrameRate(30);
     
     // Kinect setup
     ofSetLogLevel(OF_LOG_ERROR);
     kinect.setRegistration(false);
     kinect.init();
     kinect.open("A00365A12829045A");
-    kinect.setCameraTiltAngle(0);
+    kinect.setCameraTiltAngle(15);
     
 //    kinect1.setRegistration(false);
 //    kinect1.init();
@@ -32,9 +32,22 @@ void ofApp::setup(){
     box2d.registerGrabbing();
     //box2d.setFPS(24.0);
     
+    // animal
+    background.loadImage("back.jpg");
     raccoon.loadImage("raccoon.png");
+    
+    bird = new ofxTexturePacker();
+    bird->load("texture/notrim.xml");
+    birdAnimation = bird->getAnimatedSprite("bird");
+    if(birdAnimation != NULL){
+        birdAnimation->setSpeed(30);
+        birdAnimation->play();
+    }else{
+        ofLog(OF_LOG_FATAL_ERROR, "Could not load animated sprite");
+    }
 }
 
+//void ofApp::exit(){ }
 //--------------------------------------------------------------
 void ofApp::update(){
     kinect.update();
@@ -53,7 +66,7 @@ void ofApp::update(){
         // Combine two kinect images
         for(int i=0; i<640; i++){
             memcpy(combinedVideo + (i*960), GrayPixel.getPixels()+(i*480), 480);
-            memcpy(combinedVideo + (i*960+480), GrayPixel1.getPixels()+(i*480), 480);
+            //memcpy(combinedVideo + (i*960+480), GrayPixel1.getPixels()+(i*480), 480);
             bothKinects.setFromPixels(combinedVideo, 480*2, 640);
         }
         bothKinects.resize(960*kinectResize, 640*kinectResize);
@@ -102,13 +115,19 @@ void ofApp::update(){
     grayimage1.flagImageChanged();
     
     ofRemove(circles, ofxBox2dBaseShape::shouldRemoveOffScreen);
+    
+    if(birdAnimation){
+        birdAnimation->update();
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
     
+    background.draw(0, 0);
     // Draw kinect depth image
-    bothKinects.draw(0, topMargin, bothKinects.width,bothKinects.height);
+    //bothKinects.draw(0, topMargin, bothKinects.width,bothKinects.height);
+    contourfinder.draw(0, topMargin);
     
     // Draw yellow circle in the center of each blob
     for(int i=0; i<currentInput; i++){
@@ -134,6 +153,22 @@ void ofApp::draw(){
     raccoon.draw(circlePosX-55, circlePosY-30, raWidth*.65, raHeight*.65);
     ofFill();
     
+    // Draw bird collision area
+    for(int i=0; i<rects.size(); i++){
+        ofNoFill();
+        ofSetColor(100, 150, 200);
+        rects[i].get()->draw();
+        rectPos = rects[i].get()->getPosition();
+        ofSetColor(255);
+    }
+    
+    // Draw bird animation
+    if (birdAnimation) {
+        birdX = rectPos.x;
+        birdY = rectPos.y;
+        birdAnimation->draw(birdX-birdW*.6, birdY-birdH*.5);
+    }
+    
     // Draw red Box2dEdge on the contour of each blob
     ofSetColor(255, 0, 0);
     ofSetLineWidth(3.0);
@@ -142,7 +177,7 @@ void ofApp::draw(){
     }
     
     // Draw screen guidlines
-    ofSetColor(0, 255, 255);
+    ofSetColor(0, 255, 255, 100);
     for(int i=1; i<8; i++){
         ofSetLineWidth(1.0);
         if(i%2==1){
@@ -154,19 +189,29 @@ void ofApp::draw(){
         ofDrawBitmapString(ofToString(int(ofMap(i*(screenWidth/8), 0, screenWidth, 0, 350)))+"cm", i*(screenWidth/8)+9, 10);
     }
     ofSetColor(255);
+
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
+    
     if(key == 'c'){
-        
         circles.clear();
-        
         float radius = 43;
         circles.push_back(ofPtr<ofxBox2dCircle>(new ofxBox2dCircle));
         ofxBox2dCircle * circle = circles.back().get();
         circle -> setPhysics(0.001, 0.0, 0.0); // density, bounce, friction
         circle -> setup(box2d.getWorld(), mouseX, mouseY, radius);
+    }
+    
+    if(key == 'b'){
+        rects.clear();
+        rects.push_back(ofPtr<ofxBox2dRect>(new ofxBox2dRect));
+        ofxBox2dRect * rect = rects.back().get();
+        ofRectangle rec;
+        rec = ofRectangle(mouseX, mouseY, birdW*.75, birdH*.3);
+        rect -> setPhysics(0.001, 0.0, 0.0);
+        rect -> setup(box2d.getWorld(), rec);
     }
 }
 

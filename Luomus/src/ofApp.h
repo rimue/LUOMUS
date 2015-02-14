@@ -4,6 +4,8 @@
 #include "ofxKinect.h"
 #include "ofxBox2d.h"
 #include "ofxOpenCv.h"
+#include "ofxXmlSettings.h"
+#include "ofxTexturePacker.h"
 
 class ofApp : public ofBaseApp{
     
@@ -11,6 +13,7 @@ public:
     void setup();
     void update();
     void draw();
+//    void exit();
     
     void keyPressed(int key);
     void keyReleased(int key);
@@ -38,28 +41,39 @@ public:
     ofPixels GrayPixel1;
     
     float kinectResize = 1.33;
-    int nearThreshold = 190;
-    int minArea = 500;
+    int nearThreshold = 200;
+    int minArea = 5000;
     int maxArea;
     int maxInput = 5;
     int currentInput = 0;
     int numOfPtsOfBlob = 0;
     int topMargin = 25;
-    string message = "not hole //";
+    string message = "not a hole";
     
     // Box2d
     ofxBox2d box2d;
     vector<ofPtr<ofxBox2dEdge> > edges;
     vector<ofPtr<ofxBox2dCircle> > circles;
+    vector<ofPtr<ofxBox2dRect> > rects;
 
     
-    // animal
+    // raccoon
     int raWidth = 155;
     int raHeight = 100;
     float circlePosX=0;
     float circlePosY=0;
     ofxBox2dCircle raCircle;
     ofVec2f circlePos;
+    ofVec2f rectPos;
     ofImage raccoon;
+    
+    // bird
+    ofxTexturePacker * bird;
+    ofxTPAnimatedSprite * birdAnimation;
+    float birdX, birdY;
+    float birdW = 192;
+    float birdH = 270;
+    
+    ofImage background;
     
 };
