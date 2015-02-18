@@ -47,7 +47,7 @@ public:
     ofPixels GrayPixel1;
     
     float kinectResize = 1.33;
-    int nearThreshold = 180;
+    int nearThreshold = 170;
     int minArea = 5000;
     int maxArea;
     int maxInput = 5;
@@ -77,6 +77,7 @@ public:
     float birdAniX, birdAniY;
     
     ofVec2f birdCurrentPos;
+    ofVec2f birdRectPos;
     
     float blobCenterX, blobCenterY;
     
@@ -94,7 +95,6 @@ public:
     float brAngle=0;
     bool aniplay=true;
     
-    
     // Animal
     int raWidth = 155;
     int raHeight = 100;
@@ -106,6 +106,6 @@ public:
     
     
 private:
-    bool isCircleInsideLine(ofxBox2dCircle* circle);
+    bool isInsideLine(ofxBox2dRect* rect);
     
 };

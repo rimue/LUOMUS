@@ -8,13 +8,18 @@ void ofApp::setup(){
     // Kinect setup
     ofSetLogLevel(OF_LOG_ERROR);
     kinect.setRegistration(false);
-    kinect.listDevices();
+//    kinect.listDevices();
     kinect.init();
-    kinect.open();
-    kinect.setCameraTiltAngle(15);
+    kinect.open("A00365917784047A");
+    kinect.setCameraTiltAngle(0);
+    
+    kinect1.setRegistration(false);
+    kinect1.init();
+    kinect1.open("A00365A12829045A");
+    kinect1.setCameraTiltAngle(0);
     
     grayimage.allocate(kinect.width, kinect.height);
-    grayimage1.allocate(kinect.width, kinect.height);
+    grayimage1.allocate(kinect1.width, kinect1.height);
     
     bothKinects.allocate(kinect.height*2, kinect.width);
     combinedVideo = (unsigned char*)malloc(640 * 480 * 2 * sizeof(unsigned char*));
@@ -34,7 +39,7 @@ void ofApp::setup(){
     
     // animal
     background.loadImage("back1.jpg");
-    raccoon.loadImage("raccoon.png");
+//    raccoon.loadImage("raccoon.png");
     
     bird = new ofxTexturePacker();
     bird->load("texture/notrim.xml");
@@ -49,11 +54,11 @@ void ofApp::setup(){
     
     birdW = birdAnimation->getWidth();
     birdH = birdAnimation->getHeight();
-    birdX = 200;
+    birdX = 300;
     birdY = screenHeight/2;
     
     birdRectW = birdW*.25;
-    birdRectH = birdH*.75;
+    birdRectH = birdH*.65;
     
     groundSpeed = 0.02;
     groundTimer = 0;
@@ -69,8 +74,8 @@ void ofApp::setup(){
     
 }
 
-bool ofApp::isCircleInsideLine(ofxBox2dCircle* circle){
-    ofVec2f pos = circle->getPosition();
+bool ofApp::isInsideLine(ofxBox2dRect* rect){
+    ofVec2f pos = rect->getPosition();
     
     for (int i = 0; i < edges.size(); i++) {
         ofPtr<ofxBox2dEdge> edge = edges[i];
@@ -82,47 +87,17 @@ bool ofApp::isCircleInsideLine(ofxBox2dCircle* circle){
     return false;
 }
 
-void ofApp::box2dTestUpdate() {
-    
-    box2d.update();
-    
-    // World
-    b2World* world = box2d.getWorld();
-    
-    // Create a body
-    b2BodyDef myBodyDef;
-    myBodyDef.type = b2_dynamicBody;
-    myBodyDef.position.Set(0, 20);
-    myBodyDef.angle = 0;
-    
-    b2Body* dynamicBody = world->CreateBody(&myBodyDef);
-    
-    // Create shape
-    b2PolygonShape boxShape;
-    boxShape.SetAsBox(1,1);
-    
-    // Create fixture
-    b2FixtureDef boxFixtureDef;
-    boxFixtureDef.shape = &boxShape;
-    boxFixtureDef.density = 1;
-    dynamicBody->CreateFixture(&boxFixtureDef);
-    
-    
-    
-    return;
-    
-}
-
 //--------------------------------------------------------------
 void ofApp::update(){
     
     kinect.update();
+    kinect1.update();
     box2d.update();
     
-    if(kinect.isFrameNew()){
+    if(kinect.isFrameNew() && kinect1.isFrameNew()){
         // Get depth image from kinect and add pixels to cvGrayImages
         grayimage.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height);
-        grayimage1.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height);
+        grayimage1.setFromPixels(kinect1.getDepthPixels(), kinect1.width, kinect1.height);
         grayimage.blur(1.5);    grayimage1.blur(1.5);
         
         GrayPixel = grayimage.getPixelsRef();
@@ -133,7 +108,7 @@ void ofApp::update(){
         // Combine two kinect images
         for(int i=0; i<640; i++){
             memcpy(combinedVideo + (i*960), GrayPixel.getPixels()+(i*480), 480);
-            //memcpy(combinedVideo + (i*960+480), GrayPixel1.getPixels()+(i*480), 480);
+            memcpy(combinedVideo + (i*960+480), GrayPixel1.getPixels()+(i*480), 480);
             bothKinects.setFromPixels(combinedVideo, 480*2, 640);
         }
         bothKinects.resize(960*kinectResize, 640*kinectResize);
@@ -162,7 +137,7 @@ void ofApp::update(){
                 
                 // Loop points in blob
                 // Get every 4th point
-                for ( int j=0; j < numOfPtsOfBlob; j += 4 ) {
+                for ( int j=0; j < numOfPtsOfBlob; j += 8 ) {
                     
                     int pointX = cvblobs[i].pts.at(j).x;
                     int pointY = cvblobs[i].pts.at(j).y + TOP_MARGIN;
@@ -195,17 +170,20 @@ void ofApp::update(){
     
     
     birdCurrentPos = br.get()->getPosition();
+    birdAnimation->update();
     
-    if(birdAnimation){
-        birdAnimation->update();
-        if(aniplay){
-            // moving animation
+//    if(birdAnimation){}
+    
+    for(int i=0; i<rects.size(); i++){
+        if (!(isInsideLine(rects[i].get()))) {
+            aniplay = true;
+            birdAnimation->play();
             birdY += (xSpeed*direction);
             if(birdY <= 0) direction *= -1;
             if(birdY+birdRectH >= screenHeight) direction *= -1;
             
-            float   t = ofGetElapsedTimef() * 1.1;
-            float   x = ofSignedNoise(t) * 150 + (sin(t)* 10);
+            float   t = ofGetElapsedTimef() * 0.6;
+            float   x = ofSignedNoise(t) * 150 + (sin(t)* 50);
             if(ofGetElapsedTimef() - groundTimer > groundSpeed) {
                 float newHeight = 200 + x;
                 groundTimer = ofGetElapsedTimef();
@@ -216,6 +194,7 @@ void ofApp::update(){
     
     
     if (!aniplay) {
+        birdAnimation->stop();
         birdX = birdCurrentPos.x;
         birdY = birdCurrentPos.y;
     }
@@ -226,12 +205,42 @@ void ofApp::update(){
     birdAniX = birdX-birdW/2;
     birdAniY = birdY-birdH/2;
     
+    /////////////////////////////
+    // Set rect densities
+    for ( int i=0; i < rects.size(); i++ ) {
+        ofxBox2dRect *rect = rects[i].get();
+        
+        birdRectPos = rect->getPosition();
+        rect->update();
+        ofSetColor(255);
+        
+        b2Body* body = rect->body;
+        
+        if ( isInsideLine(rect) ) {
+            
+            body->SetType(b2_dynamicBody);
+            body->GetFixtureList()->SetDensity(0.001);
+            body->ResetMassData();
+            //cout << "setting circle density to 0.05 " << endl;
+        }
+        else {
+            
+            body->SetType(b2_staticBody);
+            body->GetFixtureList()->SetDensity(0.0);
+            body->ResetMassData();
+            
+            //cout << "setting circle density to 0.0" << endl;
+        }
+        
+    }
+
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
     
-    //cout << kinect.getSerial() << "\n";
+    //cout << kinect1.getSerial() << "\n";
     //background.draw(0, 0);
     // Draw kinect depth image
     bothKinects.draw(0, TOP_MARGIN, bothKinects.width,bothKinects.height);
@@ -269,23 +278,20 @@ void ofApp::draw(){
     }
     ofSetColor(255);
     
-    // Draw raccoon collision area: green Box2dCircles
-    for(int i=0; i<circles.size(); i++){
-        ofNoFill();
-        ofSetColor(0, 255, 100);
-        circles[i].get()->draw();
-        if (isCircleInsideLine(circles[i].get())) {
-            cout << " CIRCLE IS INSIDE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
-        }
-        circlePos = circles[i].get()->getPosition();
-        ofSetColor(255);
-    }
-    
-    // Draw raccoon image
-    circlePosX = circlePos.x;
-    circlePosY = circlePos.y;
-    raccoon.draw(circlePosX-55, circlePosY-30, raWidth*.65, raHeight*.65);
-    ofFill();
+//    // Draw raccoon collision area: green Box2dCircles
+//    for(int i=0; i<circles.size(); i++){
+//        ofNoFill();
+//        ofSetColor(0, 255, 100);
+//        circles[i].get()->draw();
+//        circlePos = circles[i].get()->getPosition();
+//        ofSetColor(255);
+//    }
+//    
+//    // Draw raccoon image
+//    circlePosX = circlePos.x;
+//    circlePosY = circlePos.y;
+//    raccoon.draw(circlePosX-55, circlePosY-30, raWidth*.65, raHeight*.65);
+//    ofFill();
     
     
     ///////////////////////////////////////////////////////////////////////////
@@ -303,6 +309,9 @@ void ofApp::draw(){
     for(int i=0; i<testRects.size(); i++){
         ofSetColor(255, 0, 0);
         testRects[i].get()->draw();
+//        if (isInsideLine(testRects[i].get())) {
+//            cout << " RECTANGLE IS INSIDE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+//        }
         ofSetColor(255);
     }
     
@@ -317,9 +326,14 @@ void ofApp::contactStart(ofxBox2dContactArgs &e){
     
     if(e.a != NULL && e.b != NULL) {
         if(e.a -> GetType() == b2Shape::e_edge && e.b->GetType() == b2Shape::e_polygon){
-            cout << " contactStart \n";
-            aniplay = false;
-            birdAnimation->stop();
+            for(int i=0; i<rects.size(); i++){
+                if (isInsideLine(rects[i].get())) {
+                    
+                                cout << " contactStart......" << endl;
+                    aniplay = false;
+                    //birdAnimation->stop();
+                }
+            }
         }
     }
 }
@@ -328,9 +342,14 @@ void ofApp::contactStart(ofxBox2dContactArgs &e){
 void ofApp::contactEnd(ofxBox2dContactArgs &e){
     
     if(e.a != NULL && e.b != NULL) {
-        cout << ".....................contactEnd \n";
-//        aniplay = true;
-//        birdAnimation->play();
+//        for(int i=0; i<rects.size(); i++){
+//            if (!(isInsideLine(rects[i].get()))) {
+//                
+//                cout << ".....................contactEnd" << endl;
+//                aniplay = true;
+//                birdAnimation->play();
+//            }
+//        }
     }
 }
 
@@ -338,7 +357,7 @@ void ofApp::contactEnd(ofxBox2dContactArgs &e){
 void ofApp::mousePressed(int x, int y, int button){
     ofPtr <ofxBox2dRect> r = ofPtr<ofxBox2dRect>(new ofxBox2dRect);
     r.get()->setPhysics(1, 0.5, 0.9);
-    ofRectangle rec = ofRectangle(x, y, 100, 100);
+    ofRectangle rec = ofRectangle(x, y, 50, 50);
     r.get()->setup(box2d.getWorld(), rec);
     testRects.push_back(r);
     
@@ -361,19 +380,19 @@ void ofApp::keyPressed(int key){
     }
     
     // Place the animal image at mouse position
-    if(key == 'c'){
-        
-        circles.clear();
-        
-        float radius = 43;
-        circles.push_back(ofPtr<ofxBox2dCircle>(new ofxBox2dCircle));
-        ofxBox2dCircle * circle = circles.back().get();
-        
-        // Initial density is 0
-        circle -> setPhysics(0.05, 0.0, 0.0); // density, bounce, friction
-        circle -> setup(box2d.getWorld(), mouseX, mouseY, radius);
-        
-    }
+//    if(key == 'c'){
+//        
+//        circles.clear();
+//        
+//        float radius = 43;
+//        circles.push_back(ofPtr<ofxBox2dCircle>(new ofxBox2dCircle));
+//        ofxBox2dCircle * circle = circles.back().get();
+//        
+//        // Initial density is 0
+//        circle -> setPhysics(0.05, 0.0, 0.0); // density, bounce, friction
+//        circle -> setup(box2d.getWorld(), mouseX, mouseY, radius);
+//        
+//    }
 }
 
 //--------------------------------------------------------------
