@@ -10,16 +10,12 @@ void ofApp::setup(){
     kinect.setRegistration(false);
 //    kinect.listDevices();
     kinect.init();
-    kinect.open("A00365917784047A");
+//    kinect.open("A00365917784047A");
+    kinect.open();
     kinect.setCameraTiltAngle(0);
     
-    kinect1.setRegistration(false);
-    kinect1.init();
-    kinect1.open("A00365A12829045A");
-    kinect1.setCameraTiltAngle(0);
-    
     grayimage.allocate(kinect.width, kinect.height);
-    grayimage1.allocate(kinect1.width, kinect1.height);
+    grayimage1.allocate(kinect.width, kinect.height);
     
     bothKinects.allocate(kinect.height*2, kinect.width);
     
@@ -88,77 +84,17 @@ bool ofApp::isInsideLine(ofxBox2dRect* rect){
     return false;
 }
 
-//--------------------------------------------------------------
-bool ofApp::isCircleInsideLine(ofxBox2dCircle* circle){
-    ofVec2f pos = circle->getPosition();
-
-    for ( int i = 0; i < edges.size(); i++ ) {
-        ofPtr<ofxBox2dEdge> edge = edges[i];
-        edge.get()->inside(pos);
-        if ( edge->inside( pos.x, pos.y ) ) {
-            return true;
-        }
-    };
-    return false;
-}
-
-void ofApp::animalCaught() {
-    
-    
-    
-    // Create a patch somewhere
-    // And enable it
-    
-    // Display feedback
-    
-}
-
-void ofApp::animalReleased() {
-    // Hide the patch ?
-}
-
-void ofApp::box2dTestUpdate() {
-    
-    box2d.update();
-    
-    // World
-    b2World* world = box2d.getWorld();
-    
-    // Create a body
-    b2BodyDef myBodyDef;
-    myBodyDef.type = b2_dynamicBody;
-    myBodyDef.position.Set(0, 20);
-    myBodyDef.angle = 0;
-    
-    b2Body* dynamicBody = world->CreateBody(&myBodyDef);
-    
-    // Create shape
-    b2PolygonShape boxShape;
-    boxShape.SetAsBox(1,1);
-    
-    // Create fixture
-    b2FixtureDef boxFixtureDef;
-    boxFixtureDef.shape = &boxShape;
-    boxFixtureDef.density = 1;
-    dynamicBody->CreateFixture(&boxFixtureDef);
-    
-    
-
-    return;
-
-}
 
 //--------------------------------------------------------------
 void ofApp::update(){
     
-    kinect.update();
-    kinect1.update();
     box2d.update();
+    kinect.update();
     
-    if(kinect.isFrameNew() && kinect1.isFrameNew()){
+    if(kinect.isFrameNew()){
         // Get depth image from kinect and add pixels to cvGrayImages
         grayimage.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height);
-        grayimage1.setFromPixels(kinect1.getDepthPixels(), kinect1.width, kinect1.height);
+        grayimage1.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height);
         grayimage.blur(1.5);    grayimage1.blur(1.5);
         
         GrayPixel = grayimage.getPixelsRef();
@@ -220,6 +156,8 @@ void ofApp::update(){
                 edge.get()->close();
                 
                 edge.get()->update();
+                
+                
             }
         }
     }
@@ -302,7 +240,7 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     
-    //cout << kinect1.getSerial() << "\n";
+    //cout << kinect.getSerial() << "\n";
     //background.draw(0, 0);
     // Draw kinect depth image
     bothKinects.draw(0, TOP_MARGIN, bothKinects.width,bothKinects.height);

@@ -18,7 +18,6 @@ public:
     void update();
     void draw();
     // For testing box2d stuff
-    void box2dTestUpdate();
     
     void keyPressed(int key);
     void keyReleased(int key);
@@ -116,4 +115,8 @@ public:
 private:
     bool isInsideLine(ofxBox2dRect* rect);
     
+    void animalCaught();
+    void animalReleased();
+    
+
 };
