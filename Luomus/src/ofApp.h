@@ -13,7 +13,7 @@ public:
     void setup();
     void update();
     void draw();
-//    void exit();
+    //    void exit();
     
     void keyPressed(int key);
     void keyReleased(int key);
@@ -25,8 +25,12 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     
-    int screenWidth = 1280;
-    int screenHeight = 914;
+    void contactStart(ofxBox2dContactArgs &e);
+    void contactEnd(ofxBox2dContactArgs &e);
+    
+    int screenWidth = ofGetScreenWidth();
+    int screenHeight = ofGetScreenHeight();
+    
     
     // Kinect
     ofxKinect kinect, kinect1;
@@ -36,12 +40,13 @@ public:
     ofxCvContourFinder contourfinder;
     vector<ofxCvBlob> cvblobs;
     
+    
     unsigned char* combinedVideo;
     ofPixels GrayPixel;
     ofPixels GrayPixel1;
     
     float kinectResize = 1.33;
-    int nearThreshold = 200;
+    int nearThreshold = 180;
     int minArea = 5000;
     int maxArea;
     int maxInput = 5;
@@ -50,30 +55,42 @@ public:
     int topMargin = 25;
     string message = "not a hole";
     
+    
     // Box2d
     ofxBox2d box2d;
     vector<ofPtr<ofxBox2dEdge> > edges;
-    vector<ofPtr<ofxBox2dCircle> > circles;
     vector<ofPtr<ofxBox2dRect> > rects;
-
+    vector<ofPtr<ofxBox2dRect> > testRects;
     
-    // raccoon
-    int raWidth = 155;
-    int raHeight = 100;
-    float circlePosX=0;
-    float circlePosY=0;
-    ofxBox2dCircle raCircle;
-    ofVec2f circlePos;
-    ofVec2f rectPos;
-    ofImage raccoon;
-    
-    // bird
+    ////// bird
     ofxTexturePacker * bird;
     ofxTPAnimatedSprite * birdAnimation;
-    float birdX, birdY;
-    float birdW = 192;
-    float birdH = 270;
     
+    // starting pos
+    float birdX, birdY;
+    // original sprite size
+    float birdW, birdH;
+    // box2d sprite size
+    float birdRectW, birdRectH;
+    //
+    float birdAniX, birdAniY;
+    
+    ofVec2f birdCurrentPos;
+    
+    float blobCenterX, blobCenterY;
+    
+    float groundSpeed;
+    float groundTimer;
+    float xSpeed = 5.0;
+    int direction;
+    
+    // background
     ofImage background;
+    
+    
+    //
+    ofPtr<ofxBox2dRect> br;
+    float brAngle=0;
+    bool aniplay=true;
     
 };

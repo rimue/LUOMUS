@@ -9,13 +9,8 @@ void ofApp::setup(){
     ofSetLogLevel(OF_LOG_ERROR);
     kinect.setRegistration(false);
     kinect.init();
-    kinect.open("A00365A12829045A");
+    kinect.open();
     kinect.setCameraTiltAngle(15);
-    
-//    kinect1.setRegistration(false);
-//    kinect1.init();
-//    kinect1.open("A00365917784047A");
-//    kinect1.setCameraTiltAngle(0);
     
     grayimage.allocate(kinect.width, kinect.height);
     grayimage1.allocate(kinect.width, kinect.height);
@@ -28,23 +23,48 @@ void ofApp::setup(){
     // Box2d setup
     ofSetVerticalSync(false);
     box2d.init();
-    box2d.setGravity(0, 0);
+    box2d.setGravity(0, 0.0);
     box2d.registerGrabbing();
-    //box2d.setFPS(24.0);
+    //box2d.createBounds();
+    box2d.enableEvents();
+    
+    ofAddListener(box2d.contactStartEvents, this, &ofApp::contactStart);
+    ofAddListener(box2d.contactEndEvents, this, &ofApp::contactEnd);
     
     // animal
-    background.loadImage("back.jpg");
-    raccoon.loadImage("raccoon.png");
+    background.loadImage("back1.jpg");
     
     bird = new ofxTexturePacker();
     bird->load("texture/notrim.xml");
     birdAnimation = bird->getAnimatedSprite("bird");
+    //bird->setDebugMode(true);
     if(birdAnimation != NULL){
         birdAnimation->setSpeed(30);
         birdAnimation->play();
     }else{
         ofLog(OF_LOG_FATAL_ERROR, "Could not load animated sprite");
     }
+    
+    birdW = birdAnimation->getWidth();
+    birdH = birdAnimation->getHeight();
+    birdX = 200;
+    birdY = screenHeight/2;
+    
+    birdRectW = birdW*.25;
+    birdRectH = birdH*.75;
+    
+    groundSpeed = 0.02;
+    groundTimer = 0;
+    
+    xSpeed = 5.0;
+    direction = -1;
+    
+    br = ofPtr<ofxBox2dRect>(new ofxBox2dRect);
+    br.get()->setPhysics(0.01, 0.1, 0.1);
+    ofRectangle brec = ofRectangle(birdX, birdY, birdRectW, birdRectH);
+    br.get()->setup(box2d.getWorld(), brec);
+    rects.push_back(br);
+    
 }
 
 //void ofApp::exit(){ }
@@ -52,6 +72,7 @@ void ofApp::setup(){
 void ofApp::update(){
     kinect.update();
     box2d.update();
+    
     if(kinect.isFrameNew()){
         // Get depth image from kinect and add pixels to cvGrayImages
         grayimage.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height);
@@ -114,59 +135,61 @@ void ofApp::update(){
     grayimage.flagImageChanged();
     grayimage1.flagImageChanged();
     
-    ofRemove(circles, ofxBox2dBaseShape::shouldRemoveOffScreen);
+    /////////////////////////////////////////////////////////////////////
+    
+    
+    birdCurrentPos = br.get()->getPosition();
     
     if(birdAnimation){
         birdAnimation->update();
+        if(aniplay){
+            // moving animation
+            birdY += (xSpeed*direction);
+            if(birdY <= 0) direction *= -1;
+            if(birdY+birdRectH >= screenHeight) direction *= -1;
+            
+            float   t = ofGetElapsedTimef() * 1.1;
+            float   x = ofSignedNoise(t) * 150 + (sin(t)* 10);
+            if(ofGetElapsedTimef() - groundTimer > groundSpeed) {
+                float newHeight = 200 + x;
+                groundTimer = ofGetElapsedTimef();
+                birdX = newHeight;
+            }
+        }
     }
+    
+    
+    if (!aniplay) {
+        birdX = birdCurrentPos.x;
+        birdY = birdCurrentPos.y;
+    }
+    
+    br.get()->setPosition(birdX, birdY);
+    br.get()->setRotation(brAngle);
+    
+    birdAniX = birdX-birdW/2;
+    birdAniY = birdY-birdH/2;
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
     
-    background.draw(0, 0);
+    //cout << kinect.getSerial() << "\n";
+    //background.draw(0, 0);
     // Draw kinect depth image
-    //bothKinects.draw(0, topMargin, bothKinects.width,bothKinects.height);
-    contourfinder.draw(0, topMargin);
+    bothKinects.draw(0, topMargin, bothKinects.width,bothKinects.height);
+    //contourfinder.draw(0, topMargin);
     
     // Draw yellow circle in the center of each blob
     for(int i=0; i<currentInput; i++){
         if(cvblobs[i].hole){
+            blobCenterX = cvblobs[i].centroid.x;
+            blobCenterY = cvblobs[i].centroid.y;
             ofSetColor(255, 255, 0);
-            ofCircle(cvblobs[i].centroid.x, cvblobs[i].centroid.y+topMargin, 5);
+            ofCircle(blobCenterX, blobCenterY+topMargin, 5);
             ofSetColor(255);
         }
-    }
-    
-    // Draw raccoon collision area: green Box2dCircles
-    for(int i=0; i<circles.size(); i++){
-        ofNoFill();
-        ofSetColor(0, 255, 100);
-        circles[i].get()->draw();
-        circlePos = circles[i].get()->getPosition();
-        ofSetColor(255);
-    }
-    
-    // Draw raccoon image
-    circlePosX = circlePos.x;
-    circlePosY = circlePos.y;
-    raccoon.draw(circlePosX-55, circlePosY-30, raWidth*.65, raHeight*.65);
-    ofFill();
-    
-    // Draw bird collision area
-    for(int i=0; i<rects.size(); i++){
-        ofNoFill();
-        ofSetColor(100, 150, 200);
-        rects[i].get()->draw();
-        rectPos = rects[i].get()->getPosition();
-        ofSetColor(255);
-    }
-    
-    // Draw bird animation
-    if (birdAnimation) {
-        birdX = rectPos.x;
-        birdY = rectPos.y;
-        birdAnimation->draw(birdX-birdW*.6, birdY-birdH*.5);
     }
     
     // Draw red Box2dEdge on the contour of each blob
@@ -189,29 +212,77 @@ void ofApp::draw(){
         ofDrawBitmapString(ofToString(int(ofMap(i*(screenWidth/8), 0, screenWidth, 0, 350)))+"cm", i*(screenWidth/8)+9, 10);
     }
     ofSetColor(255);
-
+    
+    ///////////////////////////////////////////////////////////////////////////
+    
+    // Draw bird collision area
+    for(int i=0; i<rects.size(); i++){
+        ofNoFill();
+        ofSetLineWidth(3.0);
+        ofSetColor(0, 0, 255);
+        rects[i].get()->draw();
+        ofSetColor(255);
+    }
+    
+    // draw red rect - mouse click
+    for(int i=0; i<testRects.size(); i++){
+        ofSetColor(255, 0, 0);
+        testRects[i].get()->draw();
+        ofSetColor(255);
+    }
+    
+    // Draw bird animation
+    if (birdAnimation) {
+        birdAnimation->draw(birdAniX, birdAniY);
+    }
+    
+}
+//--------------------------------------------------------------
+void ofApp::contactStart(ofxBox2dContactArgs &e){
+    
+    if(e.a != NULL && e.b != NULL) {
+        if(e.a -> GetType() == b2Shape::e_edge && e.b->GetType() == b2Shape::e_polygon){
+            cout << " contactStart \n";
+            aniplay = false;
+            birdAnimation->stop();
+        }
+    }
 }
 
 //--------------------------------------------------------------
+void ofApp::contactEnd(ofxBox2dContactArgs &e){
+    
+    if(e.a != NULL && e.b != NULL) {
+        cout << ".....................contactEnd \n";
+//        aniplay = true;
+//        birdAnimation->play();
+    }
+}
+
+//--------------------------------------------------------------
+void ofApp::mousePressed(int x, int y, int button){
+    ofPtr <ofxBox2dRect> r = ofPtr<ofxBox2dRect>(new ofxBox2dRect);
+    r.get()->setPhysics(1, 0.5, 0.9);
+    ofRectangle rec = ofRectangle(x, y, 100, 100);
+    r.get()->setup(box2d.getWorld(), rec);
+    testRects.push_back(r);
+    
+}
+//--------------------------------------------------------------
+void ofApp::mouseMoved(int x, int y ){
+    
+}
+//--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     
-    if(key == 'c'){
-        circles.clear();
-        float radius = 43;
-        circles.push_back(ofPtr<ofxBox2dCircle>(new ofxBox2dCircle));
-        ofxBox2dCircle * circle = circles.back().get();
-        circle -> setPhysics(0.001, 0.0, 0.0); // density, bounce, friction
-        circle -> setup(box2d.getWorld(), mouseX, mouseY, radius);
+    if (key == 's') {
+        aniplay=false;
+        birdAnimation->stop();
     }
     
-    if(key == 'b'){
-        rects.clear();
-        rects.push_back(ofPtr<ofxBox2dRect>(new ofxBox2dRect));
-        ofxBox2dRect * rect = rects.back().get();
-        ofRectangle rec;
-        rec = ofRectangle(mouseX, mouseY, birdW*.75, birdH*.3);
-        rect -> setPhysics(0.001, 0.0, 0.0);
-        rect -> setup(box2d.getWorld(), rec);
+    if (key == 'p') {
+        aniplay=true;
+        birdAnimation->play();
     }
 }
 
@@ -221,17 +292,7 @@ void ofApp::keyReleased(int key){
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseMoved(int x, int y ){
-    
-}
-
-//--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::mousePressed(int x, int y, int button){
     
 }
 

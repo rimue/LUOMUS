@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
-<!-- $TexturePacker:SmartUpdate:713dd2a6c1bc0a47c27a7004d8f47927:90df97791f971a99d1926b1e06ee552f:25a1b0439aefd88213f0e23bf5e4ddcc$ -->
+<!-- $TexturePacker:SmartUpdate:b7561882eac1650f9db2053a9d45412e:1b709d9839cb9af28b6b0f8ae2bd9ca0:25a1b0439aefd88213f0e23bf5e4ddcc$ -->
 <!--Format:
 n  => name of the sprite
 x  => sprite x pos in texture
@@ -15,25 +15,25 @@ oW => sprite's original width (only available if trimmed)
 oH => sprite's original height (only available if trimmed)
 r => 'y' only set if sprite is rotated
 -->
-<TextureAtlas imagePath="notrim.png" width="1942" height="546">
-    <sprite n="bird00001.png" x="2" y="2" w="192" h="270" pX="0.5" pY="0.5"/>
-    <sprite n="bird00002.png" x="2" y="274" w="192" h="270" pX="0.5" pY="0.5"/>
-    <sprite n="bird00003.png" x="196" y="2" w="192" h="270" pX="0.5" pY="0.5"/>
-    <sprite n="bird00004.png" x="196" y="274" w="192" h="270" pX="0.5" pY="0.5"/>
-    <sprite n="bird00005.png" x="390" y="2" w="192" h="270" pX="0.5" pY="0.5"/>
-    <sprite n="bird00006.png" x="390" y="274" w="192" h="270" pX="0.5" pY="0.5"/>
-    <sprite n="bird00007.png" x="584" y="2" w="192" h="270" pX="0.5" pY="0.5"/>
-    <sprite n="bird00008.png" x="584" y="274" w="192" h="270" pX="0.5" pY="0.5"/>
-    <sprite n="bird00009.png" x="778" y="2" w="192" h="270" pX="0.5" pY="0.5"/>
-    <sprite n="bird00010.png" x="778" y="274" w="192" h="270" pX="0.5" pY="0.5"/>
-    <sprite n="bird00011.png" x="972" y="2" w="192" h="270" pX="0.5" pY="0.5"/>
-    <sprite n="bird00012.png" x="972" y="274" w="192" h="270" pX="0.5" pY="0.5"/>
-    <sprite n="bird00013.png" x="1166" y="2" w="192" h="270" pX="0.5" pY="0.5"/>
-    <sprite n="bird00014.png" x="1166" y="274" w="192" h="270" pX="0.5" pY="0.5"/>
-    <sprite n="bird00015.png" x="1360" y="2" w="192" h="270" pX="0.5" pY="0.5"/>
-    <sprite n="bird00016.png" x="1360" y="274" w="192" h="270" pX="0.5" pY="0.5"/>
-    <sprite n="bird00017.png" x="1554" y="2" w="192" h="270" pX="0.5" pY="0.5"/>
-    <sprite n="bird00018.png" x="1554" y="274" w="192" h="270" pX="0.5" pY="0.5"/>
-    <sprite n="bird00019.png" x="1748" y="2" w="192" h="270" pX="0.5" pY="0.5"/>
-    <sprite n="bird00020.png" x="1748" y="2" w="192" h="270" pX="0.5" pY="0.5"/>
+<TextureAtlas imagePath="notrim.png" width="3840" height="146">
+    <sprite n="bird00001.png" x="2" y="2" w="200" h="142" pX="0.5" pY="0.5"/>
+    <sprite n="bird00002.png" x="204" y="2" w="200" h="142" pX="0.5" pY="0.5"/>
+    <sprite n="bird00003.png" x="406" y="2" w="200" h="142" pX="0.5" pY="0.5"/>
+    <sprite n="bird00004.png" x="608" y="2" w="200" h="142" pX="0.5" pY="0.5"/>
+    <sprite n="bird00005.png" x="810" y="2" w="200" h="142" pX="0.5" pY="0.5"/>
+    <sprite n="bird00006.png" x="1012" y="2" w="200" h="142" pX="0.5" pY="0.5"/>
+    <sprite n="bird00007.png" x="1214" y="2" w="200" h="142" pX="0.5" pY="0.5"/>
+    <sprite n="bird00008.png" x="1416" y="2" w="200" h="142" pX="0.5" pY="0.5"/>
+    <sprite n="bird00009.png" x="1618" y="2" w="200" h="142" pX="0.5" pY="0.5"/>
+    <sprite n="bird00010.png" x="1820" y="2" w="200" h="142" pX="0.5" pY="0.5"/>
+    <sprite n="bird00011.png" x="2022" y="2" w="200" h="142" pX="0.5" pY="0.5"/>
+    <sprite n="bird00012.png" x="2224" y="2" w="200" h="142" pX="0.5" pY="0.5"/>
+    <sprite n="bird00013.png" x="2426" y="2" w="200" h="142" pX="0.5" pY="0.5"/>
+    <sprite n="bird00014.png" x="2628" y="2" w="200" h="142" pX="0.5" pY="0.5"/>
+    <sprite n="bird00015.png" x="2830" y="2" w="200" h="142" pX="0.5" pY="0.5"/>
+    <sprite n="bird00016.png" x="3032" y="2" w="200" h="142" pX="0.5" pY="0.5"/>
+    <sprite n="bird00017.png" x="3234" y="2" w="200" h="142" pX="0.5" pY="0.5"/>
+    <sprite n="bird00018.png" x="3436" y="2" w="200" h="142" pX="0.5" pY="0.5"/>
+    <sprite n="bird00019.png" x="3638" y="2" w="200" h="142" pX="0.5" pY="0.5"/>
+    <sprite n="bird00020.png" x="3638" y="2" w="200" h="142" pX="0.5" pY="0.5"/>
 </TextureAtlas>
