@@ -13,7 +13,8 @@ public:
     void setup();
     void update();
     void draw();
-    //    void exit();
+    // For testing box2d stuff
+    void box2dTestUpdate();
     
     void keyPressed(int key);
     void keyReleased(int key);
@@ -51,8 +52,7 @@ public:
     int maxArea;
     int maxInput = 5;
     int currentInput = 0;
-    int numOfPtsOfBlob = 0;
-    int topMargin = 25;
+    const int TOP_MARGIN = 25;
     string message = "not a hole";
     
     
@@ -61,6 +61,7 @@ public:
     vector<ofPtr<ofxBox2dEdge> > edges;
     vector<ofPtr<ofxBox2dRect> > rects;
     vector<ofPtr<ofxBox2dRect> > testRects;
+    vector<ofPtr<ofxBox2dCircle> > circles;
     
     ////// bird
     ofxTexturePacker * bird;
@@ -92,5 +93,19 @@ public:
     ofPtr<ofxBox2dRect> br;
     float brAngle=0;
     bool aniplay=true;
+    
+    
+    // Animal
+    int raWidth = 155;
+    int raHeight = 100;
+    float circlePosX=0;
+    float circlePosY=0;
+    ofxBox2dCircle raCircle;
+    ofVec2f circlePos;
+    ofImage raccoon;
+    
+    
+private:
+    bool isCircleInsideLine(ofxBox2dCircle* circle);
     
 };
