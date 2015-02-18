@@ -3,13 +3,19 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
     ofBackground(100);
-    ofSetFrameRate(12);
+    ofSetFrameRate(25);
     
     // Kinect setup
     ofSetLogLevel(OF_LOG_ERROR);
     kinect.setRegistration(false);
+    
+    kinect.listDevices();
+    
     kinect.init();
-    kinect.open("A00365A12829045A");
+
+    kinect.open();
+
+    //kinect.open("A00365A12829045A");
     kinect.setCameraTiltAngle(0);
     
 //    kinect1.setRegistration(false);
@@ -21,6 +27,7 @@ void ofApp::setup(){
     grayimage1.allocate(kinect.width, kinect.height);
     
     bothKinects.allocate(kinect.height*2, kinect.width);
+    
     combinedVideo = (unsigned char*)malloc(640 * 480 * 2 * sizeof(unsigned char*));
     
     cvblobs.resize(100);
@@ -31,15 +38,65 @@ void ofApp::setup(){
     box2d.setGravity(0, 0);
     box2d.registerGrabbing();
     //box2d.setFPS(24.0);
-    
     raccoon.loadImage("raccoon.png");
 }
 
 //--------------------------------------------------------------
-void ofApp::update(){
-    kinect.update();
+bool ofApp::isCircleInsideLine(ofxBox2dCircle* circle){
+    ofVec2f pos = circle->getPosition();
+
+    for (int i = 0; i < edges.size(); i++) {
+        ofPtr<ofxBox2dEdge> edge = edges[i];
+        edge.get()->inside(pos);
+        if ( edge->inside(pos.x, pos.y) ) {
+            return true;
+        }
+    };
+    return false;
+}
+
+void ofApp::box2dTestUpdate() {
+    
     box2d.update();
-    if(kinect.isFrameNew()){
+    
+    // World
+    b2World* world = box2d.getWorld();
+    
+    // Create a body
+    b2BodyDef myBodyDef;
+    myBodyDef.type = b2_dynamicBody;
+    myBodyDef.position.Set(0, 20);
+    myBodyDef.angle = 0;
+    
+    b2Body* dynamicBody = world->CreateBody(&myBodyDef);
+    
+    // Create shape
+    b2PolygonShape boxShape;
+    boxShape.SetAsBox(1,1);
+    
+    // Create fixture
+    b2FixtureDef boxFixtureDef;
+    boxFixtureDef.shape = &boxShape;
+    boxFixtureDef.density = 1;
+    dynamicBody->CreateFixture(&boxFixtureDef);
+    
+    
+
+    return;
+
+}
+
+//--------------------------------------------------------------
+void ofApp::update(){
+    
+    //return box2dTestUpdate();
+    
+    box2d.update();
+    kinect.update();
+    
+    
+    if ( kinect.isFrameNew() ) {
+        
         // Get depth image from kinect and add pixels to cvGrayImages
         grayimage.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height);
         grayimage1.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height);
@@ -51,9 +108,9 @@ void ofApp::update(){
         GrayPixel1.rotate90(-1);
         
         // Combine two kinect images
-        for(int i=0; i<640; i++){
+        for ( int i=0; i<640; i++ ) {
             memcpy(combinedVideo + (i*960), GrayPixel.getPixels()+(i*480), 480);
-            memcpy(combinedVideo + (i*960+480), GrayPixel1.getPixels()+(i*480), 480);
+//            memcpy(combinedVideo + (i*960+480), GrayPixel1.getPixels()+(i*480), 480);
             bothKinects.setFromPixels(combinedVideo, 480*2, 640);
         }
         bothKinects.resize(960*kinectResize, 640*kinectResize);
@@ -64,57 +121,99 @@ void ofApp::update(){
         contourfinder.findContours(bothKinects, minArea, maxArea, maxInput, CV_RETR_CCOMP);
         
         // Clear previous edges
-        for(int i=0; i<edges.size(); i++){
+        for ( int i=0; i<edges.size(); i++ ) {
             edges[i].get()->clear();
         }
         
-        // Get points of Blob and Add to Edge
-        for(int i=0; i<contourfinder.blobs.size(); i++){
+        // Loop all found blobs
+        for ( int i=0; i < contourfinder.blobs.size(); i++ ) {
             
-            cvblobs[i] = contourfinder.blobs.at(i); //contain blobs in <cvblobs>
-            numOfPtsOfBlob = cvblobs[i].nPts;   // number of points(x,y) in each blob
+            cvblobs[i] = contourfinder.blobs.at(i); // Store found blob in <cvblobs>
             
-            if(cvblobs[i].hole){
+            int numOfPtsOfBlob = cvblobs[i].nPts;   // Number of points(x,y) in each blob
+            
+            // If there is a hole (the blob is "closed")
+            if ( cvblobs[i].hole ) {
+                
+                // Create an edge for capture area
                 ofPtr<ofxBox2dEdge> edge = ofPtr<ofxBox2dEdge>(new ofxBox2dEdge);
-                ofPtr<ofPoint> lastpoint = ofPtr<ofPoint>(new ofPoint);
                 
-                for(int j=0; j<numOfPtsOfBlob; j+=4){   //get every 4th points
+                // Loop points in blob
+                // Get every 4th point
+                for ( int j=0; j < numOfPtsOfBlob; j += 4 ) {
                     
-                    ofPtr<ofPoint> point = ofPtr<ofPoint>(new ofPoint); //and put into point
-                    point.get()->x = cvblobs[i].pts.at(j).x;
-                    point.get()->y = cvblobs[i].pts.at(j).y+topMargin;
+                    int pointX = cvblobs[i].pts.at(j).x;
+                    int pointY = cvblobs[i].pts.at(j).y + TOP_MARGIN;
                     
-                    lastpoint.get()->x = cvblobs[i].pts.at(0).x;
-                    lastpoint.get()->y = cvblobs[i].pts.at(0).y+topMargin;
-                    
-                    edge.get()->addVertex(point.get()->x, point.get()->y);  //add pointX,pointY in edge
+                    // Add point to edge
+                    edge.get()->addVertex( pointX, pointY );
                 }
-                edge.get()->addVertex(lastpoint.get()->x, lastpoint.get()->y); //add to connect first&last points
                 
-                edge.get()->setPhysics(20.0, 0.0, 0.0);
-                edge.get()->create(box2d.getWorld());   // set box2d world in edge
-                edges.push_back(edge);  // add edge into <edges>
+                // Final point of the edge
+                int lastPointX = cvblobs[i].pts.at(0).x;
+                int lastPointY = cvblobs[i].pts.at(0).y + TOP_MARGIN;
+                
+                // Add last point to edge
+                edge.get()->addVertex( lastPointX, lastPointY );
+                
+                edge.get()->setPhysics( 20.0, 0.0, 0.0 );
+                edge.get()->create( box2d.getWorld() ); // Set box2d world in edge
+                edges.push_back(edge); // Add edge into end of <edges>
+                edge.get()->close();
+                
+                edge.get()->update();
+                
+                
             }
         }
     }
-    currentInput = contourfinder.nBlobs;    // current number of blobs
+    
+    currentInput = contourfinder.nBlobs; // Current number of blobs
     grayimage.flagImageChanged();
     grayimage1.flagImageChanged();
     
     ofRemove(circles, ofxBox2dBaseShape::shouldRemoveOffScreen);
+    
+    
+    // Set circle densities
+//    for ( int i=0; i < circles.size(); i++ ) {
+//        ofxBox2dCircle *circle = circles[i].get();
+//        
+//        circlePos = circle->getPosition();
+//        circle->update();
+//        ofSetColor(255);
+//        
+//        if ( isCircleInsideLine(circle) ) {
+//            // Set density to 0.01 so it can be moved
+//            circle->setPhysics(0.05, 0.0, 0.0);
+//            b2Body* body = box2d.getWorld()->CreateBody( &(circle->bodyDef) );
+//            body->CreateFixture( &(circle->fixture) );
+//            cout << "setting circle density to 0.05 " << endl;
+//        }
+//        else {
+//            // Set density to 0 so it won't be moved
+//            circle->setPhysics(0.0, 0.0, 0.0);
+//            b2Body* body = box2d.getWorld()->CreateBody( &(circle->bodyDef) );
+//            body->CreateFixture( &(circle->fixture) );
+//            cout << "setting circle density to 0.0" << endl;
+//        }
+//        
+//    }
+
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
     
+    
     // Draw kinect depth image
-    bothKinects.draw(0, topMargin, bothKinects.width,bothKinects.height);
+    bothKinects.draw(0, TOP_MARGIN, bothKinects.width,bothKinects.height);
     
     // Draw yellow circle in the center of each blob
     for(int i=0; i<currentInput; i++){
         if(cvblobs[i].hole){
             ofSetColor(255, 255, 0);
-            ofCircle(cvblobs[i].centroid.x, cvblobs[i].centroid.y+topMargin, 5);
+            ofCircle(cvblobs[i].centroid.x, cvblobs[i].centroid.y+TOP_MARGIN, 5);
             ofSetColor(255);
         }
     }
@@ -158,6 +257,10 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
+    
+    
+    
+    // Place the animal image at mouse position
     if(key == 'c'){
         
         circles.clear();
@@ -165,8 +268,11 @@ void ofApp::keyPressed(int key){
         float radius = 43;
         circles.push_back(ofPtr<ofxBox2dCircle>(new ofxBox2dCircle));
         ofxBox2dCircle * circle = circles.back().get();
-        circle -> setPhysics(0.001, 0.0, 0.0); // density, bounce, friction
+
+        // Initial density is 0
+        circle -> setPhysics(0.05, 0.0, 0.0); // density, bounce, friction
         circle -> setup(box2d.getWorld(), mouseX, mouseY, radius);
+        
     }
 }
 

@@ -9,6 +9,10 @@ class ofApp : public ofBaseApp{
     
 public:
     void setup();
+    
+    // For testing box2d stuff
+    void box2dTestUpdate();
+    
     void update();
     void draw();
     
@@ -27,10 +31,13 @@ public:
     
     // Kinect
     ofxKinect kinect, kinect1;
+    
     ofxCvGrayscaleImage grayimage;
     ofxCvGrayscaleImage grayimage1;
     ofxCvGrayscaleImage bothKinects;
     ofxCvContourFinder contourfinder;
+    
+    // Closed contours
     vector<ofxCvBlob> cvblobs;
     
     unsigned char* combinedVideo;
@@ -38,22 +45,21 @@ public:
     ofPixels GrayPixel1;
     
     float kinectResize = 1.33;
-    int nearThreshold = 190;
+    int nearThreshold = 200;
     int minArea = 500;
     int maxArea;
     int maxInput = 5;
     int currentInput = 0;
-    int numOfPtsOfBlob = 0;
-    int topMargin = 25;
+    const int TOP_MARGIN = 25;
+    
     string message = "not hole //";
     
     // Box2d
     ofxBox2d box2d;
     vector<ofPtr<ofxBox2dEdge> > edges;
     vector<ofPtr<ofxBox2dCircle> > circles;
-
     
-    // animal
+    // Animal
     int raWidth = 155;
     int raHeight = 100;
     float circlePosX=0;
@@ -62,4 +68,9 @@ public:
     ofVec2f circlePos;
     ofImage raccoon;
     
+
+private:
+    bool isCircleInsideLine(ofxBox2dCircle* circle);
+    
+
 };
