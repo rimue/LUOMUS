@@ -45,14 +45,29 @@ void ofApp::setup(){
 bool ofApp::isCircleInsideLine(ofxBox2dCircle* circle){
     ofVec2f pos = circle->getPosition();
 
-    for (int i = 0; i < edges.size(); i++) {
+    for ( int i = 0; i < edges.size(); i++ ) {
         ofPtr<ofxBox2dEdge> edge = edges[i];
         edge.get()->inside(pos);
-        if ( edge->inside(pos.x, pos.y) ) {
+        if ( edge->inside( pos.x, pos.y ) ) {
             return true;
         }
     };
     return false;
+}
+
+void ofApp::animalCaught() {
+    
+    
+    
+    // Create a patch somewhere
+    // And enable it
+    
+    // Display feedback
+    
+}
+
+void ofApp::animalReleased() {
+    // Hide the patch ?
 }
 
 void ofApp::box2dTestUpdate() {
@@ -176,29 +191,32 @@ void ofApp::update(){
     
     
     // Set circle densities
-//    for ( int i=0; i < circles.size(); i++ ) {
-//        ofxBox2dCircle *circle = circles[i].get();
-//        
-//        circlePos = circle->getPosition();
-//        circle->update();
-//        ofSetColor(255);
-//        
-//        if ( isCircleInsideLine(circle) ) {
-//            // Set density to 0.01 so it can be moved
-//            circle->setPhysics(0.05, 0.0, 0.0);
-//            b2Body* body = box2d.getWorld()->CreateBody( &(circle->bodyDef) );
-//            body->CreateFixture( &(circle->fixture) );
-//            cout << "setting circle density to 0.05 " << endl;
-//        }
-//        else {
-//            // Set density to 0 so it won't be moved
-//            circle->setPhysics(0.0, 0.0, 0.0);
-//            b2Body* body = box2d.getWorld()->CreateBody( &(circle->bodyDef) );
-//            body->CreateFixture( &(circle->fixture) );
-//            cout << "setting circle density to 0.0" << endl;
-//        }
-//        
-//    }
+    for ( int i=0; i < circles.size(); i++ ) {
+        ofxBox2dCircle *circle = circles[i].get();
+        
+        circlePos = circle->getPosition();
+        circle->update();
+        ofSetColor(255);
+        
+        b2Body* body = circle->body;
+        
+        if ( isCircleInsideLine(circle) ) {
+            
+            body->SetType(b2_dynamicBody);
+            body->GetFixtureList()->SetDensity(0.05);
+            body->ResetMassData();
+            cout << "setting circle density to 0.05 " << endl;
+        }
+        else {
+            
+            body->SetType(b2_staticBody);
+            body->GetFixtureList()->SetDensity(0.0);
+            body->ResetMassData();
+            
+            cout << "setting circle density to 0.0" << endl;
+        }
+        
+    }
 
 }
 
@@ -257,7 +275,6 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-    
     
     
     // Place the animal image at mouse position

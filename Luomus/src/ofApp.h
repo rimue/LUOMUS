@@ -57,13 +57,22 @@ public:
     // Box2d
     ofxBox2d box2d;
     vector<ofPtr<ofxBox2dEdge> > edges;
+    
+    // Animal hit areas
     vector<ofPtr<ofxBox2dCircle> > circles;
+    
+    // Patches
+    vector<ofPtr<ofxBox2dCircle> > patches;
+    
+    ofxBox2dCircle patchCircle;
+    ofImage patchImage;
     
     // Animal
     int raWidth = 155;
     int raHeight = 100;
     float circlePosX=0;
     float circlePosY=0;
+    
     ofxBox2dCircle raCircle;
     ofVec2f circlePos;
     ofImage raccoon;
@@ -71,6 +80,9 @@ public:
 
 private:
     bool isCircleInsideLine(ofxBox2dCircle* circle);
+    
+    void animalCaught();
+    void animalReleased();
     
 
 };
