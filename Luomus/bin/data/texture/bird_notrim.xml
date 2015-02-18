@@ -13,9 +13,9 @@ oX => sprite's x-corner offset (only available if trimmed)
 oY => sprite's y-corner offset (only available if trimmed)
 oW => sprite's original width (only available if trimmed)
 oH => sprite's original height (only available if trimmed)
-r => 'y' only set if sprite is rotated
+r => 'y' only set if sprite is rotated // 
 -->
-<TextureAtlas imagePath="notrim.png" width="3840" height="146">
+<TextureAtlas imagePath="bird_notrim.png" width="3840" height="146">
     <sprite n="bird00001.png" x="2" y="2" w="200" h="142" pX="0.5" pY="0.5"/>
     <sprite n="bird00002.png" x="204" y="2" w="200" h="142" pX="0.5" pY="0.5"/>
     <sprite n="bird00003.png" x="406" y="2" w="200" h="142" pX="0.5" pY="0.5"/>

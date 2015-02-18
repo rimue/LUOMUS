@@ -39,7 +39,7 @@ void ofApp::setup(){
 //    raccoon.loadImage("raccoon.png");
     
     bird = new ofxTexturePacker();
-    bird->load("texture/notrim.xml");
+    bird->load("texture/bird_notrim.xml");
     birdAnimation = bird->getAnimatedSprite("bird");
     //bird->setDebugMode(true);
     if(birdAnimation != NULL){
