@@ -11,6 +11,10 @@ class ofApp : public ofBaseApp{
     
 public:
     void setup();
+    
+    // For testing box2d stuff
+    void box2dTestUpdate();
+    
     void update();
     void draw();
     // For testing box2d stuff
@@ -35,10 +39,13 @@ public:
     
     // Kinect
     ofxKinect kinect, kinect1;
+    
     ofxCvGrayscaleImage grayimage;
     ofxCvGrayscaleImage grayimage1;
     ofxCvGrayscaleImage bothKinects;
     ofxCvContourFinder contourfinder;
+    
+    // Closed contours
     vector<ofxCvBlob> cvblobs;
     
     
@@ -100,6 +107,7 @@ public:
     int raHeight = 100;
     float circlePosX=0;
     float circlePosY=0;
+    
     ofxBox2dCircle raCircle;
     ofVec2f circlePos;
     ofImage raccoon;

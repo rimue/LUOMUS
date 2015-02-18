@@ -22,6 +22,7 @@ void ofApp::setup(){
     grayimage1.allocate(kinect1.width, kinect1.height);
     
     bothKinects.allocate(kinect.height*2, kinect.width);
+    
     combinedVideo = (unsigned char*)malloc(640 * 480 * 2 * sizeof(unsigned char*));
     
     cvblobs.resize(100);
@@ -88,6 +89,66 @@ bool ofApp::isInsideLine(ofxBox2dRect* rect){
 }
 
 //--------------------------------------------------------------
+bool ofApp::isCircleInsideLine(ofxBox2dCircle* circle){
+    ofVec2f pos = circle->getPosition();
+
+    for ( int i = 0; i < edges.size(); i++ ) {
+        ofPtr<ofxBox2dEdge> edge = edges[i];
+        edge.get()->inside(pos);
+        if ( edge->inside( pos.x, pos.y ) ) {
+            return true;
+        }
+    };
+    return false;
+}
+
+void ofApp::animalCaught() {
+    
+    
+    
+    // Create a patch somewhere
+    // And enable it
+    
+    // Display feedback
+    
+}
+
+void ofApp::animalReleased() {
+    // Hide the patch ?
+}
+
+void ofApp::box2dTestUpdate() {
+    
+    box2d.update();
+    
+    // World
+    b2World* world = box2d.getWorld();
+    
+    // Create a body
+    b2BodyDef myBodyDef;
+    myBodyDef.type = b2_dynamicBody;
+    myBodyDef.position.Set(0, 20);
+    myBodyDef.angle = 0;
+    
+    b2Body* dynamicBody = world->CreateBody(&myBodyDef);
+    
+    // Create shape
+    b2PolygonShape boxShape;
+    boxShape.SetAsBox(1,1);
+    
+    // Create fixture
+    b2FixtureDef boxFixtureDef;
+    boxFixtureDef.shape = &boxShape;
+    boxFixtureDef.density = 1;
+    dynamicBody->CreateFixture(&boxFixtureDef);
+    
+    
+
+    return;
+
+}
+
+//--------------------------------------------------------------
 void ofApp::update(){
     
     kinect.update();
@@ -106,9 +167,9 @@ void ofApp::update(){
         GrayPixel1.rotate90(-1);
         
         // Combine two kinect images
-        for(int i=0; i<640; i++){
+        for ( int i=0; i<640; i++ ) {
             memcpy(combinedVideo + (i*960), GrayPixel.getPixels()+(i*480), 480);
-            memcpy(combinedVideo + (i*960+480), GrayPixel1.getPixels()+(i*480), 480);
+//            memcpy(combinedVideo + (i*960+480), GrayPixel1.getPixels()+(i*480), 480);
             bothKinects.setFromPixels(combinedVideo, 480*2, 640);
         }
         bothKinects.resize(960*kinectResize, 640*kinectResize);
@@ -119,7 +180,7 @@ void ofApp::update(){
         contourfinder.findContours(bothKinects, minArea, maxArea, maxInput, CV_RETR_CCOMP);
         
         // Clear previous edges
-        for(int i=0; i<edges.size(); i++){
+        for ( int i=0; i<edges.size(); i++ ) {
             edges[i].get()->clear();
         }
         
@@ -162,7 +223,8 @@ void ofApp::update(){
             }
         }
     }
-    currentInput = contourfinder.nBlobs;    // current number of blobs
+    
+    currentInput = contourfinder.nBlobs; // Current number of blobs
     grayimage.flagImageChanged();
     grayimage1.flagImageChanged();
     
