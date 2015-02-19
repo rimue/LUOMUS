@@ -38,7 +38,6 @@ void ofApp::setup(){
     background.loadImage("back1.jpg");
 //    raccoon.loadImage("raccoon.png");
     
-    animalIsCaught = false;
     
     bird = new ofxTexturePacker();
     bird->load("texture/bird_notrim.xml");
@@ -73,8 +72,10 @@ void ofApp::setup(){
     
     
     // Patches
+    animalIsCaught = true;
+    
     patch = ofPtr<animalPatch>(new animalPatch);
-    patch.get()->setup(box2d.getWorld());
+    patch.get()->setup(&box2d);
     
     return;
 }
@@ -110,14 +111,15 @@ void ofApp::animalCaught(ofxBox2dRect* rect) {
     body->GetFixtureList()->SetDensity(0.001);
     body->ResetMassData();
     
-    // Show patch
-    animalIsCaught = true;
     
     // TODO randomly select position somehow?
-    float patchX = 100.0;
-    float patchY = 100.0;
+    float patchX = 250.0;
+    float patchY = 600.0;
     patch->setPosition(patchX, patchY);
     
+    // Show patch
+    //animalIsCaught = true;
+
     return;
 }
 
@@ -131,7 +133,7 @@ void ofApp::animalReleased( ofxBox2dRect* rect ) {
     body->ResetMassData();
     
     // Hide patch
-    animalIsCaught = false;
+    //animalIsCaught = false;
     
     return;
 }
@@ -306,6 +308,7 @@ void ofApp::draw(){
     ofSetColor(255, 0, 0);
     ofSetLineWidth(3.0);
     for(int i=0; i<edges.size(); i++){
+        edges[i].get()->updateShape();
         edges[i].get()->draw();
     }
     
@@ -377,7 +380,17 @@ void ofApp::contactStart( ofxBox2dContactArgs &e ){
     
     cout << "contactStart" << endl;
     
-    if(e.a != NULL && e.b != NULL) {
+    if ( e.a != NULL && e.b != NULL ) {
+        
+//        if ( animalIsCaught ) {
+            if ( e.a->GetBody() == patch.get()->hitRectangle.get()->body ||
+                e.b->GetBody() == patch.get()->hitRectangle.get()->body ) {
+                
+                cout << "contactStart with patch" << endl;
+                
+            }
+//        }
+    
         if(e.a -> GetType() == b2Shape::e_edge && e.b->GetType() == b2Shape::e_polygon){
             for(int i=0; i<rects.size(); i++){
                 if (isInsideLine(rects[i].get())) {

@@ -27,7 +27,7 @@ public:
     virtual void setPosition(float x, float y);
     virtual void setPosition(ofVec2f p);
     
-    virtual void setup( b2World* world );
+    virtual void setup( ofxBox2d* box2d );
     
     //------------------------------------------------
     ofVec2f getPosition();
@@ -39,5 +39,10 @@ public:
     //------------------------------------------------
     virtual void update();
     virtual void draw();
+    
+private:
+
+    void contactStart(ofxBox2dContactArgs &e);
+    void contactEnd(ofxBox2dContactArgs &e);
     
 };

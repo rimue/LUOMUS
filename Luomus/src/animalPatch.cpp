@@ -18,13 +18,45 @@ animalPatch::~animalPatch() {
     // TODO destructor stuff
 }
 
-void animalPatch::setup( b2World* world) {
+//void animalPatch::contactStart(ofxBox2dContactArgs &e) {
+//    cout << "contactStart" << endl;
+//    
+//    if ( e.a != NULL && e.b != NULL ) {
+//        
+//        if(e.a -> GetType() == b2Shape::e_edge && e.b->GetType() == b2Shape::e_polygon) {
+//            
+//        }
+//    }
+//    
+//    return;
+//}
+//
+//void animalPatch::contactEnd(ofxBox2dContactArgs &e) {
+//    
+//    cout << "contactEnd" << endl;
+//    
+//    if ( e.a != NULL && e.b != NULL ) {
+//        
+//    }
+//    
+//    return;
+//
+//}
+
+
+void animalPatch::setup(  ofxBox2d* box2d) {
         
     // Setup hit rectangle
-    hitRectangle.get()->setup( world, 0.0, 0.0, 100.0, 100.0);
-    
+    hitRectangle.get()->setPhysics( 0.0, 0.0, 0.0 );
+    hitRectangle.get()->setup( box2d->getWorld(), 0.0, 0.0, 300.0, 300.0 );
+
     // Init patch image
     image.loadImage("dog.png");
+
+    // Setup contact listeners
+//    ofAddListener( box2d->contactStartEvents, this, &animalPatch::contactStart );
+//    ofAddListener( box2d->contactEndEvents, this, &animalPatch::contactEnd );
+
     
     return;
 }
@@ -59,4 +91,5 @@ void animalPatch::draw() {
     ofVec2f pos = getPosition();
     image.draw( pos.x, pos.y, 200, 200 );
 }
+
 
