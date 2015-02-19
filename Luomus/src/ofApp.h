@@ -113,7 +113,15 @@ public:
     
     
 private:
+    
+    ofPtr<ofxBox2dCircle> patchCircle;
+    ofImage patchImage;
+    
+    bool animalIsCaught;
+    
     bool isInsideLine(ofxBox2dRect* rect);
+    
+    void placePatch();
     
     void animalCaught();
     void animalReleased();
