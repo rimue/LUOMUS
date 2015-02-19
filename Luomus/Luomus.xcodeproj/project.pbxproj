@@ -231,6 +231,8 @@
 		5DF4F9D01A94BF0700B64C95 /* bird_notrim.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bird_notrim.png; sourceTree = "<group>"; };
 		5DF4F9D11A94BF0700B64C95 /* bird_notrim.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = bird_notrim.xml; sourceTree = "<group>"; };
 		5DF4F9D21A94BF0700B64C95 /* LuomusDebug.app */ = {isa = PBXFileReference; lastKnownFileType = wrapper.application; path = LuomusDebug.app; sourceTree = "<group>"; };
+		5DF738DA1A96178C00F46864 /* bf_notrim.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bf_notrim.png; sourceTree = "<group>"; };
+		5DF738DB1A96178C00F46864 /* bf_notrim.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = bf_notrim.xml; sourceTree = "<group>"; };
 		60179A75A6C5F9A54DA3A64C /* streams.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = streams.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/legacy/streams.hpp; sourceTree = SOURCE_ROOT; };
 		603F2267D449084A4187A049 /* ofxCvBlob.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxCvBlob.h; path = ../../../addons/ofxOpenCv/src/ofxCvBlob.h; sourceTree = SOURCE_ROOT; };
 		61084035F9BAD2E934415139 /* b2DynamicTree.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = b2DynamicTree.h; path = ../../../addons/ofxBox2d/libs/Box2D/Collision/b2DynamicTree.h; sourceTree = SOURCE_ROOT; };
@@ -728,6 +730,8 @@
 		5DF4F9CF1A94BF0700B64C95 /* texture */ = {
 			isa = PBXGroup;
 			children = (
+				5DF738DA1A96178C00F46864 /* bf_notrim.png */,
+				5DF738DB1A96178C00F46864 /* bf_notrim.xml */,
 				5DF4F9D01A94BF0700B64C95 /* bird_notrim.png */,
 				5DF4F9D11A94BF0700B64C95 /* bird_notrim.xml */,
 			);
