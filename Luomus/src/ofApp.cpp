@@ -37,6 +37,8 @@ void ofApp::setup(){
     // animal
     background.loadImage("background_bFly.png");
     
+    animalIsCaught = false;
+    
     bird = new ofxTexturePacker();
     bird->load("texture/bf_notrim.xml");
     birdAnimation = bird->getAnimatedSprite("bf");
@@ -68,19 +70,69 @@ void ofApp::setup(){
     br.get()->setup(box2d.getWorld(), brec);
     rects.push_back(br);
     
+    
+    // Patches
+    patch = ofPtr<animalPatch>(new animalPatch);
+    patch.get()->setup(box2d.getWorld());
+    
+    return;
 }
 
+
+
 bool ofApp::isInsideLine(ofxBox2dRect* rect){
+    
+    // Get position of rectangle
     ofVec2f pos = rect->getPosition();
     
+    // Loop edges
     for (int i = 0; i < edges.size(); i++) {
         ofPtr<ofxBox2dEdge> edge = edges[i];
+        
+        // Test if the rectangle is inside this edge
         edge.get()->inside(pos);
         if ( edge->inside(pos.x, pos.y) ) {
+            // Rectangle is inside an edge
             return true;
         }
     };
+    // Rectangle is not inside any edge
     return false;
+}
+
+void ofApp::animalCaught(ofxBox2dRect* rect) {
+    b2Body* body = rect->body;
+    
+    // Enable moving
+    // Set dynamic type and density for the animal body
+    body->SetType(b2_dynamicBody);
+    body->GetFixtureList()->SetDensity(0.001);
+    body->ResetMassData();
+    
+    // Show patch
+    animalIsCaught = true;
+    
+    // TODO randomly select position somehow?
+    float patchX = 100.0;
+    float patchY = 100.0;
+    patch->setPosition(patchX, patchY);
+    
+    return;
+}
+
+void ofApp::animalReleased( ofxBox2dRect* rect ) {
+    b2Body* body = rect->body;
+    
+    // Disable moving
+    // Set static type and remove density for the animal body
+    body->SetType(b2_staticBody);
+    body->GetFixtureList()->SetDensity(0.0);
+    body->ResetMassData();
+    
+    // Hide patch
+    animalIsCaught = false;
+    
+    return;
 }
 
 
@@ -230,18 +282,13 @@ void ofApp::update(){
     for ( int i=0; i < rects.size(); i++ ) {
         ofxBox2dRect *rect = rects[i].get();
         
-        birdRectPos = rect->getPosition();
         rect->update();
         ofSetColor(255);
         
-        b2Body* body = rect->body;
-        
         if ( isInsideLine(rect) ) {
+            // Animal caught
+            animalCaught(rect);
             
-            body->SetType(b2_dynamicBody);
-            body->GetFixtureList()->SetDensity(0.001);
-            body->ResetMassData();
-            //cout << "setting circle density to 0.05 " << endl;
         }
         else {
             
@@ -254,6 +301,7 @@ void ofApp::update(){
     }
 
     
+    return;
 }
 
 //--------------------------------------------------------------
@@ -312,9 +360,12 @@ void ofApp::draw(){
         birdAnimation->draw(birdAniX, birdAniY);
     }
     
+    return;
 }
 //--------------------------------------------------------------
-void ofApp::contactStart(ofxBox2dContactArgs &e){
+void ofApp::contactStart( ofxBox2dContactArgs &e ){
+    
+    cout << "contactStart" << endl;
     
     if(e.a != NULL && e.b != NULL) {
         if(e.a -> GetType() == b2Shape::e_edge && e.b->GetType() == b2Shape::e_polygon){
@@ -332,13 +383,19 @@ void ofApp::contactStart(ofxBox2dContactArgs &e){
 //            }
         }
     }
+    
+    return;
 }
 
 //--------------------------------------------------------------
 void ofApp::contactEnd(ofxBox2dContactArgs &e){
     
+    cout << "contactEnd" << endl;
+    
     if(e.a != NULL && e.b != NULL) {
     }
+    
+    return;
 }
 
 //--------------------------------------------------------------

@@ -6,18 +6,15 @@
 #include "ofxOpenCv.h"
 #include "ofxXmlSettings.h"
 #include "ofxTexturePacker.h"
+#include "animalPatch.h"
 
 class ofApp : public ofBaseApp{
     
 public:
     void setup();
     
-    // For testing box2d stuff
-    void box2dTestUpdate();
-    
     void update();
     void draw();
-    // For testing box2d stuff
     
     void keyPressed(int key);
     void keyReleased(int key);
@@ -81,6 +78,7 @@ public:
     float birdAniX, birdAniY;
     // original sprite size
     float birdW, birdH;
+    
     // box2d sprite size
     float birdRectW, birdRectH;
     
@@ -104,10 +102,16 @@ public:
     bool aniplay=true;
     
 private:
+    
+    ofPtr<animalPatch> patch;
+    
+    bool animalIsCaught;
+    
     bool isInsideLine(ofxBox2dRect* rect);
     
-    void animalCaught();
-    void animalReleased();
     
-
+    void animalCaught(ofxBox2dRect* rect);
+    void animalReleased(ofxBox2dRect* rect);
+    
+    
 };

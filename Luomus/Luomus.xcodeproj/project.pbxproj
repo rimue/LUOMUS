@@ -72,6 +72,7 @@
 		BB885F5F39C8DA070D80EF02 /* b2BlockAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A76D962905D0BA4DE02320A5 /* b2BlockAllocator.cpp */; };
 		BBAB23CB13894F3D00AA2426 /* GLUT.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = BBAB23BE13894E4700AA2426 /* GLUT.framework */; };
 		BFD2A0EEBE3B4153659EC355 /* b2Contact.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBCA857DA9C5F92BF720A6C8 /* b2Contact.cpp */; };
+		C0D06A0B1A95E3DD00AB8560 /* animalPatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0D06A0A1A95E3DD00AB8560 /* animalPatch.cpp */; };
 		C1DDE2EB6202440187690701 /* b2MotorJoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4BB2D6A3717A8F7F88D52CD /* b2MotorJoint.cpp */; };
 		C3D8EF14A387EA959014AD91 /* b2ContactManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14F573EB8A3C9D93203E1F20 /* b2ContactManager.cpp */; };
 		CB503B33759F22A302B8FC6E /* b2Settings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52FD632883052641C31C9444 /* b2Settings.cpp */; };
@@ -334,6 +335,8 @@
 		BCA4D5203BFB8EDC3BDAE67F /* b2EdgeAndCircleContact.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = b2EdgeAndCircleContact.cpp; path = ../../../addons/ofxBox2d/libs/Box2D/Dynamics/Contacts/b2EdgeAndCircleContact.cpp; sourceTree = SOURCE_ROOT; };
 		BCCD69F7BE28DA5483CC6DB5 /* b2World.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = b2World.cpp; path = ../../../addons/ofxBox2d/libs/Box2D/Dynamics/b2World.cpp; sourceTree = SOURCE_ROOT; };
 		BF2F2AA872288D30F53983EF /* tilt.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 30; name = tilt.c; path = ../../../addons/ofxKinect/libs/libfreenect/src/tilt.c; sourceTree = SOURCE_ROOT; };
+		C0D06A091A95E04F00AB8560 /* animalPatch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = animalPatch.h; sourceTree = "<group>"; };
+		C0D06A0A1A95E3DD00AB8560 /* animalPatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = animalPatch.cpp; sourceTree = "<group>"; };
 		C0D30BC2DB9B439EAD5EE777 /* assert.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = assert.hpp; path = ../../../addons/ofxBox2d/libs/triangle/assert.hpp; sourceTree = SOURCE_ROOT; };
 		C1C56D20A1A57DC44096BFE7 /* ofxCvContourFinder.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxCvContourFinder.h; path = ../../../addons/ofxOpenCv/src/ofxCvContourFinder.h; sourceTree = SOURCE_ROOT; };
 		C2613E67C51FDE6F55873E38 /* ofxBox2dRect.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxBox2dRect.cpp; path = ../../../addons/ofxBox2d/src/ofxBox2dRect.cpp; sourceTree = SOURCE_ROOT; };
@@ -1133,6 +1136,8 @@
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
 				E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
+				C0D06A0A1A95E3DD00AB8560 /* animalPatch.cpp */,
+				C0D06A091A95E04F00AB8560 /* animalPatch.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -1327,6 +1332,7 @@
 				E212C821D1064B92DD953A42 /* ofxCvHaarFinder.cpp in Sources */,
 				63020F16C7E8DED980111241 /* ofxCvImage.cpp in Sources */,
 				D3301F6A0B43BB293ED97C1D /* ofxCvShortImage.cpp in Sources */,
+				C0D06A0B1A95E3DD00AB8560 /* animalPatch.cpp in Sources */,
 				B16C89D9CA996CA8FD860D81 /* ofxBox2d.cpp in Sources */,
 				F2FF2F9D6699B4B328CB6BE3 /* ofxBox2dBaseShape.cpp in Sources */,
 				AE9254BC31C3409899D28DC9 /* ofxBox2dCircle.cpp in Sources */,
