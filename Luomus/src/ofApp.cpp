@@ -12,7 +12,7 @@ void ofApp::setup(){
     kinect.init();
 //    kinect.open("A00365917784047A");
     kinect.open();
-    kinect.setCameraTiltAngle(0);
+    //kinect.setCameraTiltAngle(0);
     
     grayimage.allocate(kinect.width, kinect.height);
     grayimage1.allocate(kinect.width, kinect.height);
@@ -73,13 +73,13 @@ void ofApp::setup(){
     
     
     // Patches
-    int patchRadius = 100;
-    patchCircle = ofPtr<ofxBox2dCircle>(new ofxBox2dCircle);
-    patchCircle->setup(box2d.getWorld(), 0, 0, patchRadius);
-    patchImage.loadImage("dog.png");
+    patch = ofPtr<animalPatch>(new animalPatch);
+    patch.get()->setup(box2d.getWorld());
     
     return;
 }
+
+
 
 bool ofApp::isInsideLine(ofxBox2dRect* rect){
     
@@ -109,19 +109,19 @@ void ofApp::animalCaught(ofxBox2dRect* rect) {
     body->SetType(b2_dynamicBody);
     body->GetFixtureList()->SetDensity(0.001);
     body->ResetMassData();
-
+    
     // Show patch
     animalIsCaught = true;
     
     // TODO randomly select position somehow?
     float patchX = 100.0;
     float patchY = 100.0;
-    patchCircle->setPosition( patchX, patchY );
+    patch->setPosition(patchX, patchY);
     
     return;
 }
 
-void ofApp::animalReleased(ofxBox2dRect* rect) {
+void ofApp::animalReleased( ofxBox2dRect* rect ) {
     b2Body* body = rect->body;
     
     // Disable moving
@@ -258,11 +258,10 @@ void ofApp::update(){
     birdAniY = birdY-birdH/2;
     
     /////////////////////////////
-    // Set rect densities
+    // Handle Animal caught / released
     for ( int i=0; i < rects.size(); i++ ) {
         ofxBox2dRect *rect = rects[i].get();
         
-        birdRectPos = rect->getPosition();
         rect->update();
         ofSetColor(255);
         
@@ -287,6 +286,7 @@ void ofApp::draw(){
     
     //cout << kinect.getSerial() << "\n";
     //background.draw(0, 0);
+    
     // Draw kinect depth image
     bothKinects.draw(0, TOP_MARGIN, bothKinects.width,bothKinects.height);
     //contourfinder.draw(0, TOP_MARGIN);
@@ -325,9 +325,7 @@ void ofApp::draw(){
     
     if ( animalIsCaught ) {
         // Draw patch
-        ofVec2f pos = patchCircle->getPosition();
-        float radius = patchCircle->getRadius();
-        patchImage.draw( pos.x, pos.y, radius*2, radius*2 );
+        patch->draw();
     }
     
 //    // Draw raccoon collision area: green Box2dCircles
@@ -375,7 +373,9 @@ void ofApp::draw(){
     return;
 }
 //--------------------------------------------------------------
-void ofApp::contactStart(ofxBox2dContactArgs &e){
+void ofApp::contactStart( ofxBox2dContactArgs &e ){
+    
+    cout << "contactStart" << endl;
     
     if(e.a != NULL && e.b != NULL) {
         if(e.a -> GetType() == b2Shape::e_edge && e.b->GetType() == b2Shape::e_polygon){
@@ -395,6 +395,8 @@ void ofApp::contactStart(ofxBox2dContactArgs &e){
 
 //--------------------------------------------------------------
 void ofApp::contactEnd(ofxBox2dContactArgs &e){
+    
+    cout << "contactEnd" << endl;
     
     if(e.a != NULL && e.b != NULL) {
 //        for(int i=0; i<rects.size(); i++){
