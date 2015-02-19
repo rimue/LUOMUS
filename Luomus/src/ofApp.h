@@ -81,6 +81,7 @@ public:
     
     // box2d sprite size
     float birdRectW, birdRectH;
+
     
     ofVec2f birdCurrentPos;
     ofVec2f birdRectPos;

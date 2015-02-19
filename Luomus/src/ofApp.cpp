@@ -291,11 +291,8 @@ void ofApp::update(){
             
         }
         else {
-            
-            body->SetType(b2_staticBody);
-            body->GetFixtureList()->SetDensity(0.0);
-            body->ResetMassData();
-            //cout << "setting circle density to 0.0" << endl;
+            // Animal released
+            animalReleased(rect);
         }
         
     }
@@ -310,7 +307,7 @@ void ofApp::draw(){
     //cout << kinect.getSerial() << "\n";
     background.draw(0, 0);
     // Draw kinect depth image
-    bothKinects.draw(0, TOP_MARGIN, bothKinects.width,bothKinects.height);
+    //bothKinects.draw(0, TOP_MARGIN, bothKinects.width,bothKinects.height);
     //contourfinder.draw(0, TOP_MARGIN);
     
     // Draw yellow circle in the center of each blob
@@ -345,6 +342,14 @@ void ofApp::draw(){
         ofDrawBitmapString(ofToString(int(ofMap(i*(screenWidth/8), 0, screenWidth, 0, 350)))+"cm", i*(screenWidth/8)+9, 10);
     }
     ofSetColor(255);
+    
+    if ( animalIsCaught ) {
+        // Draw patch
+        //patch->draw();
+    }
+    
+    
+    ///////////////////////////////////////////////////////////////////////////
     
     // Draw bird collision area
     for(int i=0; i<rects.size(); i++){
