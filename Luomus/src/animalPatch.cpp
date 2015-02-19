@@ -45,11 +45,13 @@ animalPatch::~animalPatch() {
 
 
 void animalPatch::setup(  ofxBox2d* box2d) {
-        
+    
     // Setup hit rectangle
-    hitRectangle.get()->setPhysics( 0.0, 0.0, 0.0 );
-    hitRectangle.get()->setup( box2d->getWorld(), 0.0, 0.0, 300.0, 300.0 );
-
+    hitRectangle.get()->setup( box2d->getWorld(), 100.0, 200.0, 300.0, 300.0 );
+    hitRectangle.get()->setPhysics( 30.0, 0.0, 0.0 );
+    hitRectangle.get()->body->SetType(b2_staticBody);
+    hitRectangle.get()->body->ResetMassData();
+    
     // Init patch image
     image.loadImage("dog.png");
 
@@ -83,13 +85,19 @@ void animalPatch::update() {
     hitRectangle.get()->update();
 }
 
+bool animalPatch::contains( ofPtr<ofxBox2dRect> rect) {
+    return rectOverlap( rect, hitRectangle );
+}
+
 void animalPatch::draw() {
     // Draw rectangle
+    ofSetColor(150, 200, 0);
+    ofSetLineWidth(2.0);
     hitRectangle.get()->draw();
-    
+
     // Draw the image at the current position
-    ofVec2f pos = getPosition();
-    image.draw( pos.x, pos.y, 200, 200 );
+    //ofVec2f pos = getPosition();
+    //image.draw( pos.x, pos.y, 200, 200 );
 }
 
 

@@ -335,6 +335,8 @@
 		BCA4D5203BFB8EDC3BDAE67F /* b2EdgeAndCircleContact.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = b2EdgeAndCircleContact.cpp; path = ../../../addons/ofxBox2d/libs/Box2D/Dynamics/Contacts/b2EdgeAndCircleContact.cpp; sourceTree = SOURCE_ROOT; };
 		BCCD69F7BE28DA5483CC6DB5 /* b2World.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = b2World.cpp; path = ../../../addons/ofxBox2d/libs/Box2D/Dynamics/b2World.cpp; sourceTree = SOURCE_ROOT; };
 		BF2F2AA872288D30F53983EF /* tilt.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 30; name = tilt.c; path = ../../../addons/ofxKinect/libs/libfreenect/src/tilt.c; sourceTree = SOURCE_ROOT; };
+		C0425AFA1A96578B00CF89F4 /* luomusUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = luomusUtils.h; sourceTree = "<group>"; };
+		C0425AFB1A96619300CF89F4 /* medow_patch.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = medow_patch.png; sourceTree = "<group>"; };
 		C0D06A091A95E04F00AB8560 /* animalPatch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = animalPatch.h; sourceTree = "<group>"; };
 		C0D06A0A1A95E3DD00AB8560 /* animalPatch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = animalPatch.cpp; sourceTree = "<group>"; };
 		C0D30BC2DB9B439EAD5EE777 /* assert.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = assert.hpp; path = ../../../addons/ofxBox2d/libs/triangle/assert.hpp; sourceTree = SOURCE_ROOT; };
@@ -393,7 +395,7 @@
 		E4AF3F64CAC776D23849712F /* ofxBox2dPolygon.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxBox2dPolygon.h; path = ../../../addons/ofxBox2d/src/ofxBox2dPolygon.h; sourceTree = SOURCE_ROOT; };
 		E4B69B5B0A3A1756003C02F2 /* LuomusDebug.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LuomusDebug.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4B69E1D0A3A1BDC003C02F2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = src/main.cpp; sourceTree = SOURCE_ROOT; };
-		E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofApp.cpp; path = src/ofApp.cpp; sourceTree = SOURCE_ROOT; };
+		E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofApp.cpp; path = src/ofApp.cpp; sourceTree = SOURCE_ROOT; wrapsLines = 0; };
 		E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ofApp.h; path = src/ofApp.h; sourceTree = SOURCE_ROOT; };
 		E4B6FCAD0C3E899E008CF71C /* openFrameworks-Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.xml; path = "openFrameworks-Info.plist"; sourceTree = "<group>"; };
 		E4C2424410CC5A17004149E2 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
@@ -719,6 +721,7 @@
 		5DF4F9B61A94BF0700B64C95 /* data */ = {
 			isa = PBXGroup;
 			children = (
+				C0425AFB1A96619300CF89F4 /* medow_patch.png */,
 				5DF4F9B71A94BF0700B64C95 /* back1.jpg */,
 				5DF4F9B81A94BF0700B64C95 /* bird.tps */,
 				5DF4F9B91A94BF0700B64C95 /* dog.png */,
@@ -1138,6 +1141,7 @@
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
 				C0D06A0A1A95E3DD00AB8560 /* animalPatch.cpp */,
 				C0D06A091A95E04F00AB8560 /* animalPatch.h */,
+				C0425AFA1A96578B00CF89F4 /* luomusUtils.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;

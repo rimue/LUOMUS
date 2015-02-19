@@ -9,7 +9,9 @@
 
 #include "ofMain.h"
 #include "ofxBox2d.h"
+#include "b2Collision.h"
 #include "ofxBox2dUtils.h"
+#include "luomusUtils.h"
 
 class animalPatch {
     
@@ -39,6 +41,8 @@ public:
     //------------------------------------------------
     virtual void update();
     virtual void draw();
+    
+    virtual bool contains( ofPtr<ofxBox2dRect> rect);
     
 private:
 
