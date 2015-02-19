@@ -121,10 +121,9 @@ private:
     
     bool isInsideLine(ofxBox2dRect* rect);
     
-    void placePatch();
     
-    void animalCaught();
-    void animalReleased();
+    void animalCaught(ofxBox2dRect* rect);
+    void animalReleased(ofxBox2dRect* rect);
     
 
 };

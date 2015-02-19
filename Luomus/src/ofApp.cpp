@@ -53,7 +53,7 @@ void ofApp::setup(){
     
     birdW = birdAnimation->getWidth();
     birdH = birdAnimation->getHeight();
-    birdX = 300;
+    birdX = 600;
     birdY = screenHeight/2;
     
     birdRectW = birdW*.25;
@@ -76,7 +76,7 @@ void ofApp::setup(){
     int patchRadius = 100;
     patchCircle = ofPtr<ofxBox2dCircle>(new ofxBox2dCircle);
     patchCircle->setup(box2d.getWorld(), 0, 0, patchRadius);
-    pathImage.loadImage("dog.png");
+    patchImage.loadImage("dog.png");
     
     return;
 }
@@ -114,6 +114,8 @@ void ofApp::animalCaught(ofxBox2dRect* rect) {
     animalIsCaught = true;
     
     // TODO randomly select position somehow?
+    float patchX = 100.0;
+    float patchY = 100.0;
     patchCircle->setPosition( patchX, patchY );
     
     return;
@@ -320,6 +322,13 @@ void ofApp::draw(){
         ofDrawBitmapString(ofToString(int(ofMap(i*(screenWidth/8), 0, screenWidth, 0, 350)))+"cm", i*(screenWidth/8)+9, 10);
     }
     ofSetColor(255);
+    
+    if ( animalIsCaught ) {
+        // Draw patch
+        ofVec2f pos = patchCircle->getPosition();
+        float radius = patchCircle->getRadius();
+        patchImage.draw( pos.x, pos.y, radius*2, radius*2 );
+    }
     
 //    // Draw raccoon collision area: green Box2dCircles
 //    for(int i=0; i<circles.size(); i++){
