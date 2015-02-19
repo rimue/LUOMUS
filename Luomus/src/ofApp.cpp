@@ -12,7 +12,7 @@ void ofApp::setup(){
     kinect.init();
 //    kinect.open("A00365917784047A");
     kinect.open();
-    kinect.setCameraTiltAngle(0);
+    kinect.setCameraTiltAngle(20);
     
     grayimage.allocate(kinect.width, kinect.height);
     grayimage1.allocate(kinect.width, kinect.height);
@@ -35,12 +35,11 @@ void ofApp::setup(){
     ofAddListener(box2d.contactEndEvents, this, &ofApp::contactEnd);
     
     // animal
-    background.loadImage("back1.jpg");
-//    raccoon.loadImage("raccoon.png");
+    background.loadImage("background_bFly.png");
     
     bird = new ofxTexturePacker();
-    bird->load("texture/bird_notrim.xml");
-    birdAnimation = bird->getAnimatedSprite("bird");
+    bird->load("texture/bf_notrim.xml");
+    birdAnimation = bird->getAnimatedSprite("bf");
     //bird->setDebugMode(true);
     if(birdAnimation != NULL){
         birdAnimation->setSpeed(30);
@@ -51,11 +50,11 @@ void ofApp::setup(){
     
     birdW = birdAnimation->getWidth();
     birdH = birdAnimation->getHeight();
-    birdX = 300;
+    birdX = 600;
     birdY = screenHeight/2;
     
-    birdRectW = birdW*.25;
-    birdRectH = birdH*.65;
+    birdRectW = birdW*.65;
+    birdRectH = birdH*.25;
     
     groundSpeed = 0.02;
     groundTimer = 0;
@@ -90,6 +89,10 @@ void ofApp::update(){
     
     box2d.update();
     kinect.update();
+    // does this reduce image flickering? dunno :(
+//    if (ofGetFrameNum() % 2 == 0) {
+//        kinect.update();
+//    }
     
     if(kinect.isFrameNew()){
         // Get depth image from kinect and add pixels to cvGrayImages
@@ -149,15 +152,11 @@ void ofApp::update(){
                 
                 // Add last point to edge
                 edge.get()->addVertex( lastPointX, lastPointY );
-                
                 edge.get()->setPhysics( 20.0, 0.0, 0.0 );
                 edge.get()->create( box2d.getWorld() ); // Set box2d world in edge
-                edges.push_back(edge); // Add edge into end of <edges>
                 edge.get()->close();
-                
                 edge.get()->update();
-                
-                
+                edges.push_back(edge); // Add edge into end of <edges>
             }
         }
     }
@@ -170,18 +169,25 @@ void ofApp::update(){
     
     
     birdCurrentPos = br.get()->getPosition();
-    birdAnimation->update();
-    
-//    if(birdAnimation){}
+    //cout << birdAnimation->getCurrentFrame() << endl;
     
     for(int i=0; i<rects.size(); i++){
+        
+        // when bf is not caught
         if (!(isInsideLine(rects[i].get()))) {
+
             aniplay = true;
-            birdAnimation->play();
+            
+            if (birdAnimation->getCurrentFrame()==6) {
+                birdAnimation->setFrame(1);
+            }
+            
+            // y-axis movement
             birdY += (xSpeed*direction);
             if(birdY <= 0) direction *= -1;
             if(birdY+birdRectH >= screenHeight) direction *= -1;
             
+            // x-axis movement
             float   t = ofGetElapsedTimef() * 0.6;
             float   x = ofSignedNoise(t) * 150 + (sin(t)* 50);
             if(ofGetElapsedTimef() - groundTimer > groundSpeed) {
@@ -190,14 +196,28 @@ void ofApp::update(){
                 birdX = newHeight;
             }
         }
-    }
     
-    
-    if (!aniplay) {
-        birdAnimation->stop();
-        birdX = birdCurrentPos.x;
-        birdY = birdCurrentPos.y;
+        // when bf is caught
+        if (!aniplay) {
+            
+            // bf stops at the current position
+            birdX = birdCurrentPos.x;
+            birdY = birdCurrentPos.y;
+        
+            // play 'being caught' animation
+            if (isInsideLine(rects[i].get())) {
+
+                birdAnimation->setFrame(7);
+                if (birdAnimation->getCurrentFrame()==8) {
+                    birdAnimation->setFrame(7);
+                }
+            }
+        }
+        
+        birdAnimation->update();
+        birdAnimation->play();
     }
+
     
     br.get()->setPosition(birdX, birdY);
     br.get()->setRotation(brAngle);
@@ -205,7 +225,7 @@ void ofApp::update(){
     birdAniX = birdX-birdW/2;
     birdAniY = birdY-birdH/2;
     
-    /////////////////////////////
+
     // Set rect densities
     for ( int i=0; i < rects.size(); i++ ) {
         ofxBox2dRect *rect = rects[i].get();
@@ -228,7 +248,6 @@ void ofApp::update(){
             body->SetType(b2_staticBody);
             body->GetFixtureList()->SetDensity(0.0);
             body->ResetMassData();
-            
             //cout << "setting circle density to 0.0" << endl;
         }
         
@@ -241,7 +260,7 @@ void ofApp::update(){
 void ofApp::draw(){
     
     //cout << kinect.getSerial() << "\n";
-    //background.draw(0, 0);
+    background.draw(0, 0);
     // Draw kinect depth image
     bothKinects.draw(0, TOP_MARGIN, bothKinects.width,bothKinects.height);
     //contourfinder.draw(0, TOP_MARGIN);
@@ -258,9 +277,10 @@ void ofApp::draw(){
     }
     
     // Draw red Box2dEdge on the contour of each blob
-    ofSetColor(255, 0, 0);
-    ofSetLineWidth(3.0);
+    ofSetColor(200, 150, 0);
+    ofSetLineWidth(2.0);
     for(int i=0; i<edges.size(); i++){
+        edges[i].get()->updateShape();
         edges[i].get()->draw();
     }
     
@@ -278,40 +298,12 @@ void ofApp::draw(){
     }
     ofSetColor(255);
     
-//    // Draw raccoon collision area: green Box2dCircles
-//    for(int i=0; i<circles.size(); i++){
-//        ofNoFill();
-//        ofSetColor(0, 255, 100);
-//        circles[i].get()->draw();
-//        circlePos = circles[i].get()->getPosition();
-//        ofSetColor(255);
-//    }
-//    
-//    // Draw raccoon image
-//    circlePosX = circlePos.x;
-//    circlePosY = circlePos.y;
-//    raccoon.draw(circlePosX-55, circlePosY-30, raWidth*.65, raHeight*.65);
-//    ofFill();
-    
-    
-    ///////////////////////////////////////////////////////////////////////////
-    
     // Draw bird collision area
     for(int i=0; i<rects.size(); i++){
         ofNoFill();
         ofSetLineWidth(3.0);
         ofSetColor(0, 0, 255);
-        rects[i].get()->draw();
-        ofSetColor(255);
-    }
-    
-    // draw red rect - mouse click
-    for(int i=0; i<testRects.size(); i++){
-        ofSetColor(255, 0, 0);
-        testRects[i].get()->draw();
-//        if (isInsideLine(testRects[i].get())) {
-//            cout << " RECTANGLE IS INSIDE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
-//        }
+        //rects[i].get()->draw();
         ofSetColor(255);
     }
     
@@ -326,14 +318,18 @@ void ofApp::contactStart(ofxBox2dContactArgs &e){
     
     if(e.a != NULL && e.b != NULL) {
         if(e.a -> GetType() == b2Shape::e_edge && e.b->GetType() == b2Shape::e_polygon){
-            for(int i=0; i<rects.size(); i++){
-                if (isInsideLine(rects[i].get())) {
-                    
-                                cout << " contactStart......" << endl;
-                    aniplay = false;
-                    //birdAnimation->stop();
-                }
-            }
+            aniplay = false;
+//            for(int i=0; i<rects.size(); i++){
+//                if (isInsideLine(rects[i].get())) {
+//                    
+//                    //cout << " contactStart......" << endl;
+//                    aniplay = false;
+//                    birdAnimation->setFrame(7);
+//                    if (birdAnimation->getCurrentFrame()==8) {
+//                        birdAnimation->setFrame(7);
+//                    }
+//                }
+//            }
         }
     }
 }
@@ -342,14 +338,6 @@ void ofApp::contactStart(ofxBox2dContactArgs &e){
 void ofApp::contactEnd(ofxBox2dContactArgs &e){
     
     if(e.a != NULL && e.b != NULL) {
-//        for(int i=0; i<rects.size(); i++){
-//            if (!(isInsideLine(rects[i].get()))) {
-//                
-//                cout << ".....................contactEnd" << endl;
-//                aniplay = true;
-//                birdAnimation->play();
-//            }
-//        }
     }
 }
 
@@ -378,21 +366,6 @@ void ofApp::keyPressed(int key){
         aniplay=true;
         birdAnimation->play();
     }
-    
-    // Place the animal image at mouse position
-//    if(key == 'c'){
-//        
-//        circles.clear();
-//        
-//        float radius = 43;
-//        circles.push_back(ofPtr<ofxBox2dCircle>(new ofxBox2dCircle));
-//        ofxBox2dCircle * circle = circles.back().get();
-//        
-//        // Initial density is 0
-//        circle -> setPhysics(0.05, 0.0, 0.0); // density, bounce, friction
-//        circle -> setup(box2d.getWorld(), mouseX, mouseY, radius);
-//        
-//    }
 }
 
 //--------------------------------------------------------------

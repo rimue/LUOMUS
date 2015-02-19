@@ -32,9 +32,11 @@ public:
     void contactStart(ofxBox2dContactArgs &e);
     void contactEnd(ofxBox2dContactArgs &e);
     
-    int screenWidth = ofGetScreenWidth();
-    int screenHeight = ofGetScreenHeight();
-    
+//    int screenWidth = ofGetScreenWidth();
+//    int screenHeight = ofGetScreenHeight();
+
+    int screenWidth = 1280;
+    int screenHeight = 914;
     
     // Kinect
     ofxKinect kinect, kinect1;
@@ -53,7 +55,7 @@ public:
     ofPixels GrayPixel1;
     
     float kinectResize = 1.33;
-    int nearThreshold = 170;
+    int nearThreshold = 190;
     int minArea = 5000;
     int maxArea;
     int maxInput = 5;
@@ -75,12 +77,12 @@ public:
     
     // starting pos
     float birdX, birdY;
+    // bird ani pos
+    float birdAniX, birdAniY;
     // original sprite size
     float birdW, birdH;
     // box2d sprite size
     float birdRectW, birdRectH;
-    //
-    float birdAniX, birdAniY;
     
     ofVec2f birdCurrentPos;
     ofVec2f birdRectPos;
@@ -96,21 +98,10 @@ public:
     ofImage background;
     
     
-    //
+    // bird
     ofPtr<ofxBox2dRect> br;
     float brAngle=0;
     bool aniplay=true;
-    
-    // Animal
-    int raWidth = 155;
-    int raHeight = 100;
-    float circlePosX=0;
-    float circlePosY=0;
-    
-    ofxBox2dCircle raCircle;
-    ofVec2f circlePos;
-    ofImage raccoon;
-    
     
 private:
     bool isInsideLine(ofxBox2dRect* rect);
