@@ -75,6 +75,8 @@ void ofApp::setup(){
     patch = ofPtr<animalPatch>(new animalPatch);
     patch.get()->setup(box2d.getWorld());
     
+    mainOutputSyphonServer.setName("Screen Output");
+    
     return;
 }
 
@@ -365,6 +367,8 @@ void ofApp::draw(){
         birdAnimation->draw(birdAniX, birdAniY);
     }
     
+    mainOutputSyphonServer.publishScreen();
+    
     return;
 }
 //--------------------------------------------------------------
@@ -375,17 +379,6 @@ void ofApp::contactStart( ofxBox2dContactArgs &e ){
     if(e.a != NULL && e.b != NULL) {
         if(e.a -> GetType() == b2Shape::e_edge && e.b->GetType() == b2Shape::e_polygon){
             aniplay = false;
-//            for(int i=0; i<rects.size(); i++){
-//                if (isInsideLine(rects[i].get())) {
-//                    
-//                    //cout << " contactStart......" << endl;
-//                    aniplay = false;
-//                    birdAnimation->setFrame(7);
-//                    if (birdAnimation->getCurrentFrame()==8) {
-//                        birdAnimation->setFrame(7);
-//                    }
-//                }
-//            }
         }
     }
     
