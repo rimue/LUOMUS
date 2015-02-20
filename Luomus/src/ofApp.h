@@ -7,6 +7,7 @@
 #include "ofxXmlSettings.h"
 #include "ofxTexturePacker.h"
 #include "animalPatch.h"
+#include "ofxSyphon.h"
 
 class ofApp : public ofBaseApp {
     
@@ -101,6 +102,8 @@ public:
     ofPtr<ofxBox2dRect> br;
     float brAngle=0;
     bool aniplay=true;
+    
+    ofxSyphonServer mainOutputSyphonServer;
     
 private:
     

@@ -75,7 +75,9 @@ void ofApp::setup(){
     animalIsCaught = false;
     animalIsOverPatch = false;
     patch = ofPtr<animalPatch>(new animalPatch);
-    patch.get()->setup( &box2d, "medow_patch.png", 200.0, 250.0, 248.0, 248.0 );
+    patch.get()->setup( &box2d, "medow_patch.png", 400.0, 250.0, 248.0, 248.0 );
+    
+        mainOutputSyphonServer.setName("Screen Output");
     
     return;
 }
@@ -376,6 +378,8 @@ void ofApp::draw(){
         birdAnimation->draw(birdAniX, birdAniY);
     }
     
+        mainOutputSyphonServer.publishScreen();
+    
     return;
 }
 //--------------------------------------------------------------
@@ -399,17 +403,6 @@ void ofApp::contactStart( ofxBox2dContactArgs &e ){
         if (e.a -> GetType() == b2Shape::e_edge && e.b->GetType() == b2Shape::e_polygon){
             // Contact with user and something
             aniplay = false;
-//            for(int i=0; i<rects.size(); i++){
-//                if (isInsideLine(rects[i].get())) {
-//                    
-//                    //cout << " contactStart......" << endl;
-//                    aniplay = false;
-//                    birdAnimation->setFrame(7);
-//                    if (birdAnimation->getCurrentFrame()==8) {
-//                        birdAnimation->setFrame(7);
-//                    }
-//                }
-//            }
         }
         
     }
