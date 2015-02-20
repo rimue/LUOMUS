@@ -12,8 +12,6 @@
 	<dict>
 		<key>3F0CA7D4F6FE3243F5E41848C4DD9E6F1D635EBE</key>
 		<string>https://github.com/rimue/LUOMUS.git</string>
-		<key>F4CCB893AFADB97238A965FD2F28717F1CAAE613</key>
-		<string>https://github.com/astellato/ofxSyphon.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>Luomus/Luomus.xcodeproj</string>
@@ -21,8 +19,6 @@
 	<dict>
 		<key>3F0CA7D4F6FE3243F5E41848C4DD9E6F1D635EBE</key>
 		<string>../../..</string>
-		<key>F4CCB893AFADB97238A965FD2F28717F1CAAE613</key>
-		<string>../../../../addons/ofxSyphon</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/rimue/LUOMUS.git</string>
@@ -39,14 +35,6 @@
 			<string>3F0CA7D4F6FE3243F5E41848C4DD9E6F1D635EBE</string>
 			<key>IDESourceControlWCCName</key>
 			<string>LUOMUS</string>
-		</dict>
-		<dict>
-			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
-			<string>public.vcs.git</string>
-			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>F4CCB893AFADB97238A965FD2F28717F1CAAE613</string>
-			<key>IDESourceControlWCCName</key>
-			<string>ofxSyphon</string>
 		</dict>
 	</array>
 </dict>
