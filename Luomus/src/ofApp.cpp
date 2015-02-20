@@ -73,14 +73,8 @@ void ofApp::setup(){
     
     // Patches
     animalIsCaught = true;
-    
     patch = ofPtr<animalPatch>(new animalPatch);
-    patch.get()->setup(&box2d);
-    
-    float patchX = 250.0;
-    float patchY = 200.0;
-    patch->setPosition(patchX, patchY);
-
+    patch.get()->setup( &box2d, "medow_patch.png", 200.0, 250.0, 248.0, 248.0 );
     
     return;
 }
@@ -286,7 +280,7 @@ void ofApp::update(){
     birdAniY = birdY-birdH/2;
     
 
-    // Set rect densities
+    // Animal caught check
     for ( int i=0; i < rects.size(); i++ ) {
         ofxBox2dRect *rect = rects[i].get();
         
@@ -305,10 +299,19 @@ void ofApp::update(){
         
     }
     
-    // Check if animal is inside a patch
+    // Animal in patch check
     if (animalIsCaught) {
-        if( patch->contains( br ) ) {
-            cout << "patch contains butterfly" << endl;
+        if ( patch->contains( br ) ) {
+            // Animal is in patch
+            
+            // Play animal is in patch animation
+            birdAnimation->setFrame(7);
+            if (birdAnimation->getCurrentFrame()==8) {
+                birdAnimation->setFrame(7);
+            }
+        }
+        else {
+            // Animal not in patch
         }
         
     }
@@ -367,16 +370,16 @@ void ofApp::draw(){
     
     ///////////////////////////////////////////////////////////////////////////
     
-    // Draw bird collision area
-    for(int i=0; i<rects.size(); i++){
-        ofNoFill();
-        ofSetLineWidth(3.0);
-        ofSetColor(0, 0, 255);
-        rects[i].get()->draw();
-        ofSetColor(255);
-    }
+    // Draw animal collision area
+//    for(int i=0; i<rects.size(); i++){
+//        ofNoFill();
+//        ofSetLineWidth(3.0);
+//        ofSetColor(0, 0, 255);
+//        rects[i].get()->draw();
+//        ofSetColor(255);
+//    }
     
-    // Draw bird animation
+    // Draw animal animation
     if (birdAnimation) {
         birdAnimation->draw(birdAniX, birdAniY);
     }

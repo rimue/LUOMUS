@@ -29,7 +29,7 @@ public:
     virtual void setPosition(float x, float y);
     virtual void setPosition(ofVec2f p);
     
-    virtual void setup( ofxBox2d* box2d );
+    virtual void setup( ofxBox2d* box2d, string filename, float x, float y, float width, float height);
     
     //------------------------------------------------
     ofVec2f getPosition();
