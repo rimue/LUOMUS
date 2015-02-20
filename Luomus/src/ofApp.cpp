@@ -72,9 +72,11 @@ void ofApp::setup(){
     rects.push_back(br);
     
     // Patches
-    animalIsCaught = true;
+    animalIsCaught = false;
     patch = ofPtr<animalPatch>(new animalPatch);
-    patch.get()->setup( &box2d, "medow_patch.png", 200.0, 250.0, 248.0, 248.0 );
+    patch.get()->setup( &box2d, "medow_patch.png", 400.0, 250.0, 248.0, 248.0 );
+    
+        mainOutputSyphonServer.setName("Screen Output");
     
     return;
 }
@@ -229,7 +231,7 @@ void ofApp::update(){
         
         // when bf is not caught
         if (!(isInsideLine(rects[i].get()))) {
-
+            animalIsCaught=false;
             aniplay = true;
             
             if (birdAnimation->getCurrentFrame()==6) {
@@ -253,14 +255,13 @@ void ofApp::update(){
     
         // when bf is caught
         if (!aniplay) {
-            
+            animalIsCaught=true;
             // bf stops at the current position
             birdX = birdCurrentPos.x;
             birdY = birdCurrentPos.y;
         
             // play 'being caught' animation
             if (isInsideLine(rects[i].get())) {
-
                 birdAnimation->setFrame(7);
                 if (birdAnimation->getCurrentFrame()==8) {
                     birdAnimation->setFrame(7);
@@ -383,6 +384,8 @@ void ofApp::draw(){
     if (birdAnimation) {
         birdAnimation->draw(birdAniX, birdAniY);
     }
+    
+        mainOutputSyphonServer.publishScreen();
     
     return;
 }
