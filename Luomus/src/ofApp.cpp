@@ -362,16 +362,16 @@ void ofApp::draw(){
     ///////////////////////////////////////////////////////////////////////////
     
     // Draw animal collision area
-    for(int i=0; i<rects.size(); i++){
-        ofNoFill();
-        ofSetLineWidth(3.0);
-        ofSetColor(0, 0, 255);
-        if (animalIsCaught && patch->contains(br) ) {
-            ofSetColor(100,255,0);
-        }
-        rects[i].get()->draw();
-        ofSetColor(255);
-    }
+//    for(int i=0; i<rects.size(); i++){
+//        ofNoFill();
+//        ofSetLineWidth(3.0);
+//        ofSetColor(0, 0, 255);
+//        if (animalIsCaught && patch->contains(br) ) {
+//            ofSetColor(100,255,0);
+//        }
+//        rects[i].get()->draw();
+//        ofSetColor(255);
+//    }
     
     // Draw animal animation
     if (birdAnimation) {

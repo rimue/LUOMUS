@@ -101,9 +101,9 @@ bool animalPatch::contains( ofPtr<ofxBox2dRect> rect) {
 
 void animalPatch::draw() {
     // Draw rectangle
-    ofSetColor(150, 200, 0);
-    ofSetLineWidth(2.0);
-    ofRect(this->x, this->y, this->width, this->height);
+//    ofSetColor(150, 200, 0);
+//    ofSetLineWidth(2.0);
+//    ofRect(this->x, this->y, this->width, this->height);
 
     // Draw the image at the current position
     image.draw( this->x, this->y, this->width, this->height );
