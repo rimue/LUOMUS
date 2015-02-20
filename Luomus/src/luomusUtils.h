@@ -11,6 +11,17 @@
 
 #include "ofxBox2d.h"
 
+static bool rectOverlap( float a_x, float a_y, float a_width, float a_height, ofPtr<ofxBox2dRect> r_b ) {
+    
+    float b_height = r_b.get()->getHeight();
+    float b_width = r_b.get()->getWidth();
+    float b_x = r_b.get()->getPosition().x - b_width/2;
+    float b_y = r_b.get()->getPosition().y - b_height/2;
+    
+    return !(a_x + a_width < b_x || a_y + a_height < b_y || a_x > b_x + b_width || a_y > b_y + b_height);
+}
+
+
 static bool rectOverlap( ofPtr<ofxBox2dRect> r_a, ofPtr<ofxBox2dRect> r_b ) {
 
     float a_height = r_a.get()->getHeight();

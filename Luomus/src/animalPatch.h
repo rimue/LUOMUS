@@ -17,7 +17,14 @@ class animalPatch {
     
 public:
     
-    ofPtr<ofxBox2dRect> hitRectangle;
+    
+    float width;
+    float height;
+    float x;
+    float y;
+    
+    
+    //ofPtr<ofxBox2dRect> hitRectangle;
     ofImage image;
     
     ofxBox2d* box2d;
@@ -45,7 +52,7 @@ public:
     virtual bool contains( ofPtr<ofxBox2dRect> rect);
     
 private:
-
+    
     void contactStart(ofxBox2dContactArgs &e);
     void contactEnd(ofxBox2dContactArgs &e);
     

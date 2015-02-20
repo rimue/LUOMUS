@@ -10,7 +10,7 @@
 
 //----------------------------------------
 animalPatch::animalPatch() {
-    hitRectangle = ofPtr<ofxBox2dRect>(new ofxBox2dRect);
+    //hitRectangle = ofPtr<ofxBox2dRect>(new ofxBox2dRect);
 }
 
 //----------------------------------------
@@ -46,11 +46,17 @@ animalPatch::~animalPatch() {
 
 void animalPatch::setup( ofxBox2d* box2d, string filename, float x, float y, float width, float height) {
     
+    this->width = width;
+    this->height = height;
+    this->x = x;
+    this->y = y;
+    
+    
     // Setup hit rectangle
-    hitRectangle.get()->setup( box2d->getWorld(), x, y, width, height );
-    hitRectangle.get()->setPhysics( 0.0, 0.0, 0.0 );
-    hitRectangle.get()->body->SetType(b2_staticBody);
-    hitRectangle.get()->body->ResetMassData();
+//    hitRectangle.get()->setup( box2d->getWorld(), x, y, width, height );
+//    hitRectangle.get()->setPhysics( 0.0, 0.0, 0.0 );
+//    hitRectangle.get()->body->SetType(b2_kinematicBody);
+//    hitRectangle.get()->body->ResetMassData();
     
     // Init patch image
     image.loadImage(filename);
@@ -64,42 +70,43 @@ void animalPatch::setup( ofxBox2d* box2d, string filename, float x, float y, flo
 }
 
 void animalPatch::setPosition(float x, float y) {
-    hitRectangle.get()->setPosition(x,y);
+    this->x = x;
+    this->y = y;
+//    hitRectangle.get()->setPosition(x,y);
 }
 void animalPatch::setPosition(ofVec2f p) {
-    hitRectangle.get()->setPosition(p);
+    this->x = p.x;
+    this->y = p.y;
+//    hitRectangle.get()->setPosition(p);
 }
 
 //------------------------------------------------
 ofVec2f animalPatch::getPosition() {
-    return hitRectangle.get()->getPosition();
+    return *new ofVec2f(x, y);
 }
 
 //------------------------------------------------
 void animalPatch::destroy() {
-    hitRectangle.get()->destroy();
+    //hitRectangle.get()->destroy();
 }
 
 //------------------------------------------------
 void animalPatch::update() {
-    hitRectangle.get()->update();
+//    hitRectangle.get()->update();
 }
 
 bool animalPatch::contains( ofPtr<ofxBox2dRect> rect) {
-    return rectOverlap( rect, hitRectangle );
+    return rectOverlap( this->x, this->y, this->width, this->height, rect );
 }
 
 void animalPatch::draw() {
     // Draw rectangle
-//    ofSetColor(150, 200, 0);
-//    ofSetLineWidth(2.0);
-//    hitRectangle.get()->draw();
+    ofSetColor(150, 200, 0);
+    ofSetLineWidth(2.0);
+    ofRect(this->x, this->y, this->width, this->height);
 
     // Draw the image at the current position
-    ofVec2f pos = getPosition();
-    float width = hitRectangle.get()->getWidth();
-    float height = hitRectangle.get()->getWidth();
-    image.draw( pos.x  - width/2, pos.y - height/2, width, height );
+    image.draw( this->x, this->y, this->width, this->height );
 }
 
 

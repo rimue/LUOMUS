@@ -72,7 +72,8 @@ void ofApp::setup(){
     rects.push_back(br);
     
     // Patches
-    animalIsCaught = true;
+    animalIsCaught = false;
+    animalIsOverPatch = false;
     patch = ofPtr<animalPatch>(new animalPatch);
     patch.get()->setup( &box2d, "medow_patch.png", 200.0, 250.0, 248.0, 248.0 );
     
@@ -117,12 +118,13 @@ void ofApp::animalCaught(ofxBox2dRect* rect) {
 //    patch->setPosition(patchX, patchY);
 //    
     // Show patch
-    //animalIsCaught = true;
+    animalIsCaught = true;
 
     return;
 }
 
 void ofApp::animalReleased( ofxBox2dRect* rect ) {
+    
     b2Body* body = rect->body;
     
     // Disable moving
@@ -132,7 +134,7 @@ void ofApp::animalReleased( ofxBox2dRect* rect ) {
     body->ResetMassData();
     
     // Hide patch
-    //animalIsCaught = false;
+    animalIsCaught = false;
     
     return;
 }
@@ -222,65 +224,7 @@ void ofApp::update(){
     /////////////////////////////////////////////////////////////////////
     
     
-    birdCurrentPos = br.get()->getPosition();
-    //cout << birdAnimation->getCurrentFrame() << endl;
-    
-    for(int i=0; i<rects.size(); i++){
-        
-        // when bf is not caught
-        if (!(isInsideLine(rects[i].get()))) {
-
-            aniplay = true;
-            
-            if (birdAnimation->getCurrentFrame()==6) {
-                birdAnimation->setFrame(1);
-            }
-            
-            // y-axis movement
-            birdY += (xSpeed*direction);
-            if(birdY <= 0) direction *= -1;
-            if(birdY+birdRectH >= screenHeight) direction *= -1;
-            
-            // x-axis movement
-            float   t = ofGetElapsedTimef() * 0.6;
-            float   x = ofSignedNoise(t) * 150 + (sin(t)* 50);
-            if(ofGetElapsedTimef() - groundTimer > groundSpeed) {
-                float newHeight = 200 + x;
-                groundTimer = ofGetElapsedTimef();
-                birdX = newHeight;
-            }
-        }
-    
-        // when bf is caught
-        if (!aniplay) {
-            
-            // bf stops at the current position
-            birdX = birdCurrentPos.x;
-            birdY = birdCurrentPos.y;
-        
-            // play 'being caught' animation
-            if (isInsideLine(rects[i].get())) {
-
-                birdAnimation->setFrame(7);
-                if (birdAnimation->getCurrentFrame()==8) {
-                    birdAnimation->setFrame(7);
-                }
-            }
-        }
-        
-        birdAnimation->update();
-        birdAnimation->play();
-    }
-
-    
-    br.get()->setPosition(birdX, birdY);
-    br.get()->setRotation(brAngle);
-    
-    birdAniX = birdX-birdW/2;
-    birdAniY = birdY-birdH/2;
-    
-
-    // Animal caught check
+    // Check if animal is caught
     for ( int i=0; i < rects.size(); i++ ) {
         ofxBox2dRect *rect = rects[i].get();
         
@@ -296,26 +240,71 @@ void ofApp::update(){
             // Animal released
             animalReleased(rect);
         }
-        
     }
-    
-    // Animal in patch check
+    // Check if animal is over patch
     if (animalIsCaught) {
         if ( patch->contains( br ) ) {
-            // Animal is in patch
-            
-            // Play animal is in patch animation
-            birdAnimation->setFrame(7);
-            if (birdAnimation->getCurrentFrame()==8) {
-                birdAnimation->setFrame(7);
-            }
+            // Animal is over patch
+            animalIsOverPatch = true;
         }
         else {
             // Animal not in patch
+            animalIsOverPatch = false;
         }
         
     }
+    
+    birdCurrentPos = br.get()->getPosition();
+    //cout << birdAnimation->getCurrentFrame() << endl;
+    
+    
+    // Animation handling
+    // Animal is not caught
+    if (!animalIsCaught) {
 
+        aniplay = true;
+            
+        if (birdAnimation->getCurrentFrame()==6) {
+            birdAnimation->setFrame(1);
+        }
+            
+        // y-axis movement
+        birdY += (xSpeed*direction);
+        if(birdY <= 0) direction *= -1;
+        if(birdY+birdRectH >= screenHeight) direction *= -1;
+            
+        // x-axis movement
+        float   t = ofGetElapsedTimef() * 0.6;
+        float   x = ofSignedNoise(t) * 150 + (sin(t)* 50);
+        if ( ofGetElapsedTimef() - groundTimer > groundSpeed ) {
+            float newHeight = 200 + x;
+            groundTimer = ofGetElapsedTimef();
+            birdX = newHeight;
+        }
+    }
+    // Animal is caught
+    else {
+        // bf stops at the current position
+        birdX = birdCurrentPos.x;
+        birdY = birdCurrentPos.y;
+            
+        // play 'being caught' animation
+            
+        birdAnimation->setFrame(7);
+        if (birdAnimation->getCurrentFrame()==8) {
+            birdAnimation->setFrame(7);
+        }
+    }
+    
+    birdAnimation->update();
+    birdAnimation->play();
+    
+    br.get()->setPosition(birdX, birdY);
+    br.get()->setRotation(brAngle);
+    
+    birdAniX = birdX-birdW/2;
+    birdAniY = birdY-birdH/2;
+    
     
     return;
 }
@@ -371,13 +360,16 @@ void ofApp::draw(){
     ///////////////////////////////////////////////////////////////////////////
     
     // Draw animal collision area
-//    for(int i=0; i<rects.size(); i++){
-//        ofNoFill();
-//        ofSetLineWidth(3.0);
-//        ofSetColor(0, 0, 255);
-//        rects[i].get()->draw();
-//        ofSetColor(255);
-//    }
+    for(int i=0; i<rects.size(); i++){
+        ofNoFill();
+        ofSetLineWidth(3.0);
+        ofSetColor(0, 0, 255);
+        if (animalIsCaught && patch->contains(br) ) {
+            ofSetColor(100,255,0);
+        }
+        rects[i].get()->draw();
+        ofSetColor(255);
+    }
     
     // Draw animal animation
     if (birdAnimation) {

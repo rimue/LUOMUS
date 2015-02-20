@@ -106,6 +106,8 @@ private:
     
     ofPtr<animalPatch> patch;
     
+    bool animalIsOverPatch;
+    
     bool animalIsCaught;
     
     bool isInsideLine(ofxBox2dRect* rect);
