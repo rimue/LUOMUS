@@ -12,7 +12,7 @@ void ofApp::setup(){
     kinect.init();
 //    kinect.open("A00365917784047A");
     kinect.open();
-    kinect.setCameraTiltAngle(20);
+    //kinect.setCameraTiltAngle(0);
     
     grayimage.allocate(kinect.width, kinect.height);
     grayimage1.allocate(kinect.width, kinect.height);
@@ -37,7 +37,6 @@ void ofApp::setup(){
     // animal
     background.loadImage("background_bFly.png");
     
-    animalIsCaught = false;
     
     bird = new ofxTexturePacker();
     bird->load("texture/bf_notrim.xml");
@@ -68,12 +67,14 @@ void ofApp::setup(){
     br.get()->setPhysics(0.01, 0.1, 0.1);
     ofRectangle brec = ofRectangle(birdX, birdY, birdRectW, birdRectH);
     br.get()->setup(box2d.getWorld(), brec);
+    br.get()->body->SetType(b2_dynamicBody);
+    br.get()->body->ResetMassData();
     rects.push_back(br);
     
-    
     // Patches
+    animalIsCaught = true;
     patch = ofPtr<animalPatch>(new animalPatch);
-    patch.get()->setup(box2d.getWorld());
+    patch.get()->setup( &box2d, "medow_patch.png", 200.0, 250.0, 248.0, 248.0 );
     
     mainOutputSyphonServer.setName("Screen Output");
     
@@ -111,14 +112,15 @@ void ofApp::animalCaught(ofxBox2dRect* rect) {
     body->GetFixtureList()->SetDensity(0.001);
     body->ResetMassData();
     
-    // Show patch
-    animalIsCaught = true;
     
     // TODO randomly select position somehow?
-    float patchX = 100.0;
-    float patchY = 100.0;
-    patch->setPosition(patchX, patchY);
-    
+//    float patchX = 250.0;
+//    float patchY = 600.0;
+//    patch->setPosition(patchX, patchY);
+//    
+    // Show patch
+    //animalIsCaught = true;
+
     return;
 }
 
@@ -132,7 +134,7 @@ void ofApp::animalReleased( ofxBox2dRect* rect ) {
     body->ResetMassData();
     
     // Hide patch
-    animalIsCaught = false;
+    //animalIsCaught = false;
     
     return;
 }
@@ -280,7 +282,7 @@ void ofApp::update(){
     birdAniY = birdY-birdH/2;
     
 
-    // Set rect densities
+    // Animal caught check
     for ( int i=0; i < rects.size(); i++ ) {
         ofxBox2dRect *rect = rects[i].get();
         
@@ -295,6 +297,23 @@ void ofApp::update(){
         else {
             // Animal released
             animalReleased(rect);
+        }
+        
+    }
+    
+    // Animal in patch check
+    if (animalIsCaught) {
+        if ( patch->contains( br ) ) {
+            // Animal is in patch
+            
+            // Play animal is in patch animation
+            birdAnimation->setFrame(7);
+            if (birdAnimation->getCurrentFrame()==8) {
+                birdAnimation->setFrame(7);
+            }
+        }
+        else {
+            // Animal not in patch
         }
         
     }
@@ -347,22 +366,22 @@ void ofApp::draw(){
     
     if ( animalIsCaught ) {
         // Draw patch
-        //patch->draw();
+        patch->draw();
     }
     
     
     ///////////////////////////////////////////////////////////////////////////
     
-    // Draw bird collision area
-    for(int i=0; i<rects.size(); i++){
-        ofNoFill();
-        ofSetLineWidth(3.0);
-        ofSetColor(0, 0, 255);
-        //rects[i].get()->draw();
-        ofSetColor(255);
-    }
+    // Draw animal collision area
+//    for(int i=0; i<rects.size(); i++){
+//        ofNoFill();
+//        ofSetLineWidth(3.0);
+//        ofSetColor(0, 0, 255);
+//        rects[i].get()->draw();
+//        ofSetColor(255);
+//    }
     
-    // Draw bird animation
+    // Draw animal animation
     if (birdAnimation) {
         birdAnimation->draw(birdAniX, birdAniY);
     }
@@ -374,12 +393,26 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 void ofApp::contactStart( ofxBox2dContactArgs &e ){
     
-    cout << "contactStart" << endl;
-    
-    if(e.a != NULL && e.b != NULL) {
-        if(e.a -> GetType() == b2Shape::e_edge && e.b->GetType() == b2Shape::e_polygon){
+    if ( e.a != NULL && e.b != NULL ) {
+//        if( e.a->GetType() != b2Shape::e_edge && e.b->GetType() != b2Shape::e_edge ) {
+//            // Contact with other than user
+//            cout << "contactStart with other than user" << endl;
+//            
+//            if ( animalIsCaught ) {
+//                // Detect contactStart between patch and animal
+//                if ( e.a->GetBody() == br.get()->body &&
+//                    e.b->GetBody() == patch.get()->hitRectangle.get()->body ) {
+//                    cout << "contactStart with animal and patch" << endl;
+//                }            }
+//        }
+        
+        
+        
+        if (e.a -> GetType() == b2Shape::e_edge && e.b->GetType() == b2Shape::e_polygon){
+            // Contact with user and something
             aniplay = false;
         }
+        
     }
     
     return;
@@ -388,9 +421,10 @@ void ofApp::contactStart( ofxBox2dContactArgs &e ){
 //--------------------------------------------------------------
 void ofApp::contactEnd(ofxBox2dContactArgs &e){
     
-    cout << "contactEnd" << endl;
+    //cout << "contactEnd" << endl;
     
     if(e.a != NULL && e.b != NULL) {
+        
     }
     
     return;
