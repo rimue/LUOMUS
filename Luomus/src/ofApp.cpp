@@ -76,8 +76,6 @@ void ofApp::setup(){
     patch = ofPtr<animalPatch>(new animalPatch);
     patch.get()->setup( &box2d, "medow_patch.png", 200.0, 250.0, 248.0, 248.0 );
     
-    mainOutputSyphonServer.setName("Screen Output");
-    
     return;
 }
 
@@ -385,8 +383,6 @@ void ofApp::draw(){
     if (birdAnimation) {
         birdAnimation->draw(birdAniX, birdAniY);
     }
-    
-    mainOutputSyphonServer.publishScreen();
     
     return;
 }
