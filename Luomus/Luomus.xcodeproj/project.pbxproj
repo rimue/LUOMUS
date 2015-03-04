@@ -45,6 +45,7 @@
 		5D38912F1A8D382000F4D41E /* ofxTPLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5D3891241A8D382000F4D41E /* ofxTPLoader.cpp */; };
 		5D3891301A8D382000F4D41E /* ofxTPSprite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5D3891261A8D382000F4D41E /* ofxTPSprite.cpp */; };
 		5D3891311A8D382000F4D41E /* ofxTPSpriteData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5D3891291A8D382000F4D41E /* ofxTPSpriteData.cpp */; };
+		5D8368F51AA0DC0500C4BA91 /* animal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5D8368F31AA0DC0500C4BA91 /* animal.cpp */; };
 		5DED287F1A961CA3002951CC /* Syphon.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5DED286B1A961C6F002951CC /* Syphon.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5DED28831A961D96002951CC /* Syphon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DED286B1A961C6F002951CC /* Syphon.framework */; };
 		5DED28841A961EDA002951CC /* ofxSyphonClient.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5DED28741A961C6F002951CC /* ofxSyphonClient.mm */; };
@@ -231,6 +232,8 @@
 		5D38912A1A8D382000F4D41E /* ofxTPSpriteData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxTPSpriteData.h; sourceTree = "<group>"; };
 		5D38912B1A8D382000F4D41E /* ofxTPTextureAtlas.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxTPTextureAtlas.h; sourceTree = "<group>"; };
 		5D38912C1A8D382000F4D41E /* ofxTPTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxTPTypes.h; sourceTree = "<group>"; };
+		5D8368F31AA0DC0500C4BA91 /* animal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = animal.cpp; sourceTree = "<group>"; };
+		5D8368F41AA0DC0500C4BA91 /* animal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = animal.h; sourceTree = "<group>"; };
 		5D966EA1AA66E2D55D047733 /* blobtrack.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = blobtrack.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/legacy/blobtrack.hpp; sourceTree = SOURCE_ROOT; };
 		5DED286B1A961C6F002951CC /* Syphon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Syphon.framework; sourceTree = "<group>"; };
 		5DED286D1A961C6F002951CC /* SyphonNameboundClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SyphonNameboundClient.h; sourceTree = "<group>"; };
@@ -1227,6 +1230,8 @@
 				C0D06A0A1A95E3DD00AB8560 /* animalPatch.cpp */,
 				C0D06A091A95E04F00AB8560 /* animalPatch.h */,
 				C0425AFA1A96578B00CF89F4 /* luomusUtils.h */,
+				5D8368F31AA0DC0500C4BA91 /* animal.cpp */,
+				5D8368F41AA0DC0500C4BA91 /* animal.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -1438,6 +1443,7 @@
 				F387370DB571155BC1282B7D /* b2CollideEdge.cpp in Sources */,
 				298EAD2C029D9959F5B32246 /* b2CollidePolygon.cpp in Sources */,
 				AC5A3D9E6C3E12122C80F404 /* b2Collision.cpp in Sources */,
+				5D8368F51AA0DC0500C4BA91 /* animal.cpp in Sources */,
 				A2E3224BF9B63DAA802A0F18 /* b2Distance.cpp in Sources */,
 				5D38911C1A8D381A00F4D41E /* tinyxmlparser.cpp in Sources */,
 				5D38912F1A8D382000F4D41E /* ofxTPLoader.cpp in Sources */,
